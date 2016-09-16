@@ -10,6 +10,16 @@
 #include <unistd.h>
 
 int MEMORY[65536] = {0};   // Memory
+// General Purpose registers r0-r7
+    int  r0, r1 = 10, r2, r3, r4, r5, r6, r7;
+
+    int PC;                    // Program Counter
+    int MAR;                   // Memory Address
+    int MDR;                   // Memory Data Register
+    int FLG;                   // Flag register
+    int SP;                    // Stack Pointer
+    int RA;                    // Return Address register
+    const int ZERO = 0;        // Zero Address Register
 
 /*char* convertBinary(int decimalNumber){
     printf("Hello\n");
@@ -70,7 +80,7 @@ char* decToBin(int n){
 
 
 //Function for storing the instruction to the memory
-void storeToMemory(char *inst){
+/*void storeToMemory(char *inst){
     
     char *split = (char *) malloc(16);
     char * str = (char *) malloc(16);
@@ -124,7 +134,7 @@ void storeToMemory(char *inst){
             memmove(memAddr+len, memAddr, strlen(memAddr));
             for ( int i = 0; i < len; i++ )
                 memAddr[i] = '0';
-            */
+            
             printf("MemAddr: %s\n", memAddr);
             strcat(code, memAddr);
             printf("code: %s %lu\n", code, sizeof(code));
@@ -137,29 +147,55 @@ void storeToMemory(char *inst){
     return;
     
     
+}*/
+
+void execute(char *inst[]){                         // -TARSHITH
+	char *STORE = "STORE";
+	char *FETCH = "FETCH";
+	char *R0 = "R0";
+	char *R1 = "R1";
+	char *R2 = "R2";
+	char *R3 = "R3";
+	char *R4 = "R4";
+	char *R5 = "R5";
+	char *R6 = "R6";
+	char *R7 = "R7";
+	
+	//printf("argv[i] = %s\n", inst[1]);
+	int i = 0;
+	if(strcmp(inst[1], STORE) == 0){					//CHECK IF THE INTRUCTION IS STORE OR NOT
+		printf("\nEntered instruction is STORE\n");
+		printf("Register to retrieve data from and store is = %s and address to save this data is = %d\n", inst[2], atoi(inst[3]));
+		if(strcmp(inst[2],R1) == 0){					//PLANNING TO WRITE A SWITCH CASE STATEMENT TO CHECK FOR THE REGISTER
+			MEMORY[atoi(inst[3])] = r1;
+			printf("Stored in memory and data in that memory is = %d\n\n", MEMORY[atoi(inst[3])]);
+		}
+	}
+	else if(strcmp(inst[1], FETCH) == 0){					//CHECK IF THE INTRUCTION IS FETCH OR NOT
+		printf("\nEntered instruction is FETCH\n");
+		printf("Register to load data into is = %s and address to retreive the data from is = %d\n", inst[2], atoi(inst[3]));
+		if(strcmp(inst[2],R1) == 0){							//PLANNING TO WRITE A SWITCH CASE STATEMENT TO CHECK FOR THE REGISTER
+			 r1 = MEMORY[atoi(inst[3])];
+			printf("Stored in memory and data in that memory is = %d\n\n", MEMORY[atoi(inst[3])]);
+		}
+	}
+
 }
 
 
-int main(int argc, char **argv)
+
+int main(int argc, char *argv[])    //CHANGED FROM **ARGV TO *ARGV[] - TARSHITH
 
 {
-    // General Purpose registers r0-r7
-    int  r0, r1, r2, r3, r4, r5, r6, r7;
-
-    int PC;                    // Program Counter
-    int MAR;                   // Memory Address
-    int MDR;                   // Memory Data Register
-    int FLG;                   // Flag register
-    int SP;                    // Stack Pointer
-    int RA;                    // Return Address register
-    const int ZERO = 0;        // Zero Address Register
+    
     
     for(int i=1; i< argc; i++) {
-        printf("%s\n", argv[i]);
-        storeToMemory(argv[i]);
-        //execute(argv[i]);
+        //printf("%s\n", argv[i]);
+        //storeToMemory(argv[i]);
+       // execute(argv[i], i);
     }
     
+    execute(argv);
 
     //int binaryArray = convertBinary(10);
  

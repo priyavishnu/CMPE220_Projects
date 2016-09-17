@@ -100,6 +100,57 @@ char* decToBin(int n){
     return binary;
 }
 
+void executeFetch(char *operation, char *register1, int address){                         // -TARSHITH
+    char *FETCH = "FETCH";
+    char *R0 = "R0";            //JUST FOR COMPARING WHICH REGISTER IS RECEIVED AS PARAMETER.
+    char *R1 = "R1";
+    char *R2 = "R2";
+    char *R3 = "R3";
+    char *R4 = "R4";
+    char *R5 = "R5";
+    char *R6 = "R6";
+    char *R7 = "R7";
+    //printf("\nEntered executeFetch\n");
+    printf("\nReceived parameters are: \n\tOperation = %s, Register = %s, Address = %d\n", operation, register1, address);
+    int i = 0;
+    if(strcmp(operation, FETCH) == 0){                    //CHECK IF THE INTRUCTION IS STORE OR NOT
+        //printf("\nEntered instruction is FETCH\n");
+        //printf("Register to store data after retreival is = %s and Address to retreive this data from is = %d\n", register1, address);
+
+        if(strcmp(register1,R0) == 0){                    
+            r0 = MEMORY[address];
+            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[address], R0, r0);
+        }
+        else if(strcmp(register1,R1) == 0){                    
+            r1 = MEMORY[address];
+            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[address], R1, r1);
+        }
+        else if(strcmp(register1,R2) == 0){                    
+            r2 = MEMORY[address];
+            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[address], R2, r2);
+        }
+        else if(strcmp(register1,R3) == 0){                    
+            r3 = MEMORY[address];
+            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[address], R3, r3);
+        }
+        else if(strcmp(register1,R4) == 0){                    
+            r4 = MEMORY[address];
+            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[address], R4, r4);
+        }
+        else if(strcmp(register1,R5) == 0){                    
+            r5 = MEMORY[address];
+            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[address], R5, r5);
+        }
+        else if(strcmp(register1,R6) == 0){                    
+            r6 = MEMORY[address];
+            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[address], R6, r6);
+        }
+        else if(strcmp(register1,R7) == 0){                    
+            r7 = MEMORY[address];
+            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[address], R7, r7);
+        }
+    }
+}
 
 //Function for storing the instruction to the memory
 void storeToMemory(char *inst){
@@ -107,7 +158,11 @@ void storeToMemory(char *inst){
     char *split = (char *) malloc(16);
     char * str = (char *) malloc(16);
     strcpy(str,inst);
-    
+    char *operation;
+    char *register1;
+    char *register2;
+    int address;
+
     char code[34] = "";
     
     int argNum = 0;
@@ -117,9 +172,11 @@ void storeToMemory(char *inst){
         if(argNum == 0){                    //opcode parsing
             if(strcmp(split, "FETCH")==0){
                 strcat(code, "0000");
+                operation = split;
             }
             else if(strcmp(split, "STORE")==0){
                 strcat(code, "0001");
+                operation = split;
             }
             argNum++;
             printf("code: %s %lu\n", code, sizeof(code));
@@ -127,10 +184,15 @@ void storeToMemory(char *inst){
         
         else if(argNum == 1){              //register
             printf("Split: %s\n", split);
+            register1 = split;
+            //printf("***** Split[1] is = %c\n", split[0]);
             int reg = split[1] - '0';
+            //printf("-------int reg is = %d\n", reg);
             int bin = decimalToBinary(reg);
+            //printf("-------int bin is = %d\n", bin);
             char binary[5];
             sprintf(binary, "%d", bin);
+            //printf("-------int binary is = %s\n", binary);
             
             int len = 12 - strlen(binary);
             memmove(binary+len, binary, strlen(binary));
@@ -145,6 +207,7 @@ void storeToMemory(char *inst){
         else if(argNum == 2){           //memory
             printf("Split: %s\n", split);
             int addr = atoi(split);
+            address = addr;
             printf("Addr: %d\n", addr);
             //char memAddr[17];
             char *memAddr = (char*) malloc(18);
@@ -164,58 +227,22 @@ void storeToMemory(char *inst){
         split = strtok(NULL, " ,.-");
         
     }
+    executeFetch(operation, register1, address);      
     return;
     
     
 }
 
-void execute(char *inst[]){                         // -TARSHITH
-	char *STORE = "STORE";
-	char *FETCH = "FETCH";
-	char *R0 = "R0";
-	char *R1 = "R1";
-	char *R2 = "R2";
-	char *R3 = "R3";
-	char *R4 = "R4";
-	char *R5 = "R5";
-	char *R6 = "R6";
-	char *R7 = "R7";
-	
-	//printf("argv[i] = %s\n", inst[1]);
-	int i = 0;
-	if(strcmp(inst[1], STORE) == 0){					//CHECK IF THE INTRUCTION IS STORE OR NOT
-		printf("\nEntered instruction is STORE\n");
-		printf("Register to retrieve data from and store is = %s and address to save this data is = %d\n", inst[2], atoi(inst[3]));
-		if(strcmp(inst[2],R1) == 0){					//PLANNING TO WRITE A SWITCH CASE STATEMENT TO CHECK FOR THE REGISTER
-			MEMORY[atoi(inst[3])] = r1;
-			printf("Stored in memory and data in that memory is = %d\n\n", MEMORY[atoi(inst[3])]);
-		}
-	}
-	else if(strcmp(inst[1], FETCH) == 0){					//CHECK IF THE INTRUCTION IS FETCH OR NOT
-		printf("\nEntered instruction is FETCH\n");
-		printf("Register to load data into is = %s and address to retreive the data from is = %d\n", inst[2], atoi(inst[3]));
-		if(strcmp(inst[2],R1) == 0){							//PLANNING TO WRITE A SWITCH CASE STATEMENT TO CHECK FOR THE REGISTER
-			 r1 = MEMORY[atoi(inst[3])];
-			printf("Stored in memory and data in that memory is = %d\n\n", MEMORY[atoi(inst[3])]);
-		}
-	}
-
-}
-
-
 
 int main(int argc, char *argv[])    //CHANGED FROM **ARGV TO *ARGV[] - TARSHITH
 
 {
-    
+    MEMORY[1000] = 222;             //LETS ASSUME AT THAT MOMENT MEMORY[1000] HAS A VALUE 222 AND TRY TO FETCH IT.
     
     for(int i=1; i< argc; i++) {
         printf("%s\n", argv[i]);
         storeToMemory(argv[i]);
-       // execute(argv[i], i);
     }
-    
-    execute(argv);
 
     //int binaryArray = convertBinary(10);
  

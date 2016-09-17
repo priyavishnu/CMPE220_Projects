@@ -64,19 +64,19 @@ int decimalToBinary(int n) {
 
 //Function to convert large decimal numbers to binary. Answer returned in a char string
 char* decToBin(int n){
-    printf("Num %d\n", n);
+    //printf("Num %d\n", n);
     char *binary = (char*) malloc(16);
     int rem, i = 0;
     while(n != 0){
         rem = n%2;
         n = n/2;
         binary[i] = rem + '0';
-        printf("Rem: %d    Num: %d    binary[i]: %c\n", rem, n, binary[i]);
+        //printf("Rem: %d    Num: %d    binary[i]: %c\n", rem, n, binary[i]);
         i++;
         
     }
     binary[i] = '\0';
-    printf("binary before reversal: %s\n", binary);
+   // printf("binary before reversal: %s\n", binary);
 
     //Reverse string
     char *start = binary;
@@ -96,7 +96,7 @@ char* decToBin(int n){
         --end;
     }
 
-    printf("binary: %s\n", binary);
+    //printf("binary: %s\n", binary);
     return binary;
 }
 
@@ -110,6 +110,8 @@ void execute_Fetch(char *operation, char *register1, int address){              
     char *R5 = "R5";
     char *R6 = "R6";
     char *R7 = "R7";
+    
+    
     //printf("\nEntered executeFetch\n");
     printf("\nReceived parameters are: \n\tOperation = %s, Register = %s, Address = %d\n", operation, register1, address);
     int i = 0;
@@ -169,40 +171,67 @@ void execute_store(char *operation, char *register1, int address){
     
     
     int i = 0;
-    if(strcmp(operation, STORE) == 0){
+    if(strcmp(operation, STORE) == 0)
+    
+    {
         
         
         if(strcmp(register1,R0) == 0){
             MEMORY[address]=r0;
-            printf("Data at location %d is %d \n Value in Register %s now is %d\n", address, MEMORY[address], R0, r0);
+            MAR=address;
+            MDR=MEMORY[address];
+            
+            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[address], R0, r0);
+            printf("The MAR value %d\nThe MDR value %d\n", MAR, MDR);
         }
         else if(strcmp(register1,R1) == 0){
             MEMORY[address]=r1;
-            printf("Data at location %d is %d \n Value in Register %s now is %d\n", address, MEMORY[address], R1, r1);
+            MAR=address;
+            MDR=MEMORY[address];
+            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[address], R1, r1);
+            printf("The MAR value %d\nThe MDR value %d\n", MAR, MDR);
         }
         else if(strcmp(register1,R2) == 0){
             MEMORY[address]=r2;
-            printf("Data at location %d is %d \n Value in Register %s now is %d\n", address, MEMORY[address], R2, r2);
+            MAR=address;
+            MDR=MEMORY[address];
+            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[address], R2, r2);
+            printf("The MAR value %d\nThe MDR value %d\n", MAR, MDR);
         }
         else if(strcmp(register1,R3) == 0){
             MEMORY[address]=r3;
-            printf("Data at location %d is %d \n Value in Register %s now is %d\n", address, MEMORY[address], R3, r3);
+            MAR=address;
+            MDR=MEMORY[address];
+            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[address], R3, r3);
+            printf("The MAR value %d\nThe MDR value %d\n", MAR, MDR);
         }
         else if(strcmp(register1,R4) == 0){
             MEMORY[address]=r4;
-            printf("Data at location %d is %d \n Value in Register %s now is %d\n", address, MEMORY[address], R4, r4);
+            MAR=address;
+            MDR=MEMORY[address];
+            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[address], R4, r4);
+            printf("The MAR value %d\nThe MDR value %d\n", MAR, MDR);
         }
         else if(strcmp(register1,R5) == 0){
             MEMORY[address]=r5;
-            printf("Data at location %d is %d \n Value in Register %s now is %d\n", address, MEMORY[address], R5, r5);
+            MAR=address;
+            MDR=MEMORY[address];
+            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[address], R5, r5);
+            printf("The MAR value %d\nThe MDR value %d\n", MAR, MDR);
         }
         else if(strcmp(register1,R6) == 0){
             MEMORY[address]=r6;
-            printf("Data at location %d is %d \n Value in Register %s now is %d\n", address, MEMORY[address], R6, r6);
+            MAR=address;
+            MDR=MEMORY[address];
+            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[address], R6, r6);
+            printf("The MAR value %d\nThe MDR value %d\n", MAR, MDR);
         }
         else if(strcmp(register1,R7) == 0){
             MEMORY[address]=r7;
-            printf("Data at location %d is %d \n Value in Register %s now is %d\n", address, MEMORY[address], R7, r7);
+            MAR=address;
+            MDR=MEMORY[address];
+            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[address], R7, r7);
+            printf("The MAR value %d\nThe MDR value %d\n", MAR, MDR);
         }
         
     }
@@ -224,7 +253,7 @@ void storeToMemory(char *inst){
     
     int argNum = 0;
     split = strtok(str, " ,.-");
-    printf("Split: %s\n", split);
+   // printf("Split: %s\n", split);
     while(split != NULL){
         if(argNum == 0){                    //opcode parsing
             if(strcmp(split, "FETCH")==0){
@@ -236,11 +265,11 @@ void storeToMemory(char *inst){
                 operation = split;
             }
             argNum++;
-            printf("code: %s %lu\n", code, sizeof(code));
+            printf("opcode: %s %lu\n", code, sizeof(code));
         }
         
         else if(argNum == 1){              //register
-            printf("Split: %s\n", split);
+           // printf("Split: %s\n", split);
             register1 = split;
             //printf("***** Split[1] is = %c\n", split[0]);
             int reg = split[1] - '0';
@@ -257,15 +286,15 @@ void storeToMemory(char *inst){
                 binary[i] = '0';
             
             strcat(code, binary);
-            printf("code: %s %lu\n", code, sizeof(code));
+            printf("register: %s %lu\n", code, sizeof(code));
             argNum++;
         }
         
         else if(argNum == 2){           //memory
-            printf("Split: %s\n", split);
+           // printf("Split: %s\n", split);
             int addr = atoi(split);
             address = addr;
-            printf("Addr: %d\n", addr);
+            //printf("Addr: %d\n", addr);
             //char memAddr[17];
             char *memAddr = (char*) malloc(18);
             strcpy(memAddr,decToBin(addr));
@@ -311,7 +340,17 @@ int main(int argc, char *argv[])    //CHANGED FROM **ARGV TO *ARGV[] - TARSHITH
         storeToMemory(argv[i]);
     }
 
-    //int binaryArray = convertBinary(10);
- 
+    int PC;                    // Program Counter
+    int MAR;                   // Memory Address
+    int MDR;                   // Memory Data Register
+    int FLG;                   // Flag register
+    int SP;                    // Stack Pointer
+    int RA;
+    
+    printf("The PC value %d\n", PC);
+    printf("The FLG value %d\n", FLG);
+    printf("The SP value %d\n", SP);
+    printf("The RA value %d\n", RA);
+    
     return 0 ;
 }

@@ -11,7 +11,7 @@
 
 int MEMORY[65536] = {0};   // Memory
 // General Purpose registers r0-r7
-    int  r0, r1 = 10, r2, r3, r4, r5, r6, r7;
+    int  r0, r1 = 20, r2, r3, r4, r5, r6, r7;
 
     int PC;                    // Program Counter
     int MAR;                   // Memory Address
@@ -100,7 +100,7 @@ char* decToBin(int n){
     return binary;
 }
 
-void executeFetch(char *operation, char *register1, int address){                         // -TARSHITH
+void execute_Fetch(char *operation, char *register1, int address){                         // -TARSHITH
     char *FETCH = "FETCH";
     char *R0 = "R0";            //JUST FOR COMPARING WHICH REGISTER IS RECEIVED AS PARAMETER.
     char *R1 = "R1";
@@ -151,6 +151,63 @@ void executeFetch(char *operation, char *register1, int address){               
         }
     }
 }
+
+void execute_store(char *operation, char *register1, int address){
+    char *STORE = "STORE";
+    char *R0 = "R0";
+    char *R1 = "R1";
+    char *R2 = "R2";
+    char *R3 = "R3";
+    char *R4 = "R4";
+    char *R5 = "R5";
+    char *R6 = "R6";
+    char *R7 = "R7";
+    
+    
+    
+    printf("\nReceived parameters are: \n\tOperation = %s, Register = %s, Address = %d\n", operation, register1, address);
+    
+    
+    int i = 0;
+    if(strcmp(operation, STORE) == 0){
+        
+        
+        if(strcmp(register1,R0) == 0){
+            MEMORY[address]=r0;
+            printf("Data at location %d is %d \n Value in Register %s now is %d\n", address, MEMORY[address], R0, r0);
+        }
+        else if(strcmp(register1,R1) == 0){
+            MEMORY[address]=r1;
+            printf("Data at location %d is %d \n Value in Register %s now is %d\n", address, MEMORY[address], R1, r1);
+        }
+        else if(strcmp(register1,R2) == 0){
+            MEMORY[address]=r2;
+            printf("Data at location %d is %d \n Value in Register %s now is %d\n", address, MEMORY[address], R2, r2);
+        }
+        else if(strcmp(register1,R3) == 0){
+            MEMORY[address]=r3;
+            printf("Data at location %d is %d \n Value in Register %s now is %d\n", address, MEMORY[address], R3, r3);
+        }
+        else if(strcmp(register1,R4) == 0){
+            MEMORY[address]=r4;
+            printf("Data at location %d is %d \n Value in Register %s now is %d\n", address, MEMORY[address], R4, r4);
+        }
+        else if(strcmp(register1,R5) == 0){
+            MEMORY[address]=r5;
+            printf("Data at location %d is %d \n Value in Register %s now is %d\n", address, MEMORY[address], R5, r5);
+        }
+        else if(strcmp(register1,R6) == 0){
+            MEMORY[address]=r6;
+            printf("Data at location %d is %d \n Value in Register %s now is %d\n", address, MEMORY[address], R6, r6);
+        }
+        else if(strcmp(register1,R7) == 0){
+            MEMORY[address]=r7;
+            printf("Data at location %d is %d \n Value in Register %s now is %d\n", address, MEMORY[address], R7, r7);
+        }
+        
+    }
+}
+
 
 //Function for storing the instruction to the memory
 void storeToMemory(char *inst){
@@ -227,7 +284,17 @@ void storeToMemory(char *inst){
         split = strtok(NULL, " ,.-");
         
     }
-    executeFetch(operation, register1, address);      
+    
+    
+    if(strcmp(operation, "STORE")==0)
+    {
+        execute_store(operation, register1, address);
+    }
+    else if (strcmp(operation, "FETCH")==0)
+    {
+        execute_Fetch(operation, register1, address);
+    }
+    
     return;
     
     

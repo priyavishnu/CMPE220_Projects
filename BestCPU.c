@@ -254,7 +254,7 @@ void storeToMemory(char *inst){
                 operation = split;
             }
             argNum++;
-            printf("opcode: %s %lu\n", code, sizeof(code));
+            printf("Opcode: %s \n", operation);
         }
         
         else if(argNum == 1){              //register
@@ -271,7 +271,7 @@ void storeToMemory(char *inst){
                 binary[i] = '0';
             }
             strcat(code, binary);
-            printf("register: %s %lu\n", code, sizeof(code));
+            printf("Register: %s \n", binary);
             argNum++;
         }
         
@@ -286,9 +286,9 @@ void storeToMemory(char *inst){
             for ( int i = 0; i < len; i++ )
                 memAddr[i] = '0';
             
-            printf("MemAddr:%s\n", memAddr);
+            printf("Memory Address:%s\n", memAddr);
             strcat(code, memAddr);
-            printf("code: %s %lu\n", code, sizeof(code));
+            printf("Code to store in memory in binary: %s \n", code);
             int instruction = strtol(code,NULL,2);
             
             MEMORY[PC] = instruction ; // Store the instruction in Memory starting from the IM start address
@@ -319,7 +319,7 @@ int main(int argc, char *argv[]){
     
     for(int i=1; i< argc; i++) {
         printf("\n========Executing Instruction %d==========", i) ;
-        printf("\n %s\n", argv[i]);
+        printf("\n%s\n", argv[i]);
         storeToMemory(argv[i]);
         printf("The PC value %d\n", PC);
         printf("The FLG value %d\n", FLG);

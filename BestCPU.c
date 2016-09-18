@@ -301,7 +301,8 @@ void storeToMemory(char *inst){
             //printf("-------int reg is = %d\n", reg);
             int bin = decimalToBinary(reg);
             //printf("-------int bin is = %d\n", bin);
-            char binary[5];
+            //char binary[5];
+            char *binary = (char*) malloc(10);
             sprintf(binary, "%d", bin);
             //printf("-------int binary is = %s\n", binary);
             

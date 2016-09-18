@@ -34,7 +34,7 @@ int decimalToBinary(int n) {
     return binary;
 }
 
-//Function to Convert integer to binary string
+//Function to Convert integer to binary string. This code is not used for now, for future use.
 char *inttobinary(int num, char *buf, int bufSize) {
     buf += (bufSize - 1);
     
@@ -293,7 +293,7 @@ void storeToMemory(char *inst){
             
             MEMORY[PC] = instruction ; // Store the instruction in Memory starting from the IM start address
             printf("Final code to store in memory in int: %d", instruction);
-            PC++ ;
+            PC += 4 ;
             argNum++;
             
         }
@@ -312,7 +312,7 @@ void storeToMemory(char *inst){
 
 
 int main(int argc, char *argv[]){
-    MEMORY[1000] = 222;             //LETS ASSUME AT THAT MOMENT MEMORY[1000] HAS A VALUE 222 AND TRY TO FETCH IT.
+    MEMORY[20000] = 222;             //LETS ASSUME AT THAT MOMENT MEMORY[1000] HAS A VALUE 222 AND TRY TO FETCH IT.
     
     // Initiating the instruction memory[IM] address from 10000. Needs to be changed for booting OS later.
     PC = 10000;

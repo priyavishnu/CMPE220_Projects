@@ -9,7 +9,7 @@
 int MEMORY[65536] = {0};   // Memory
 
 // General Purpose registers r0-r7
-int  r0, r1 = 20, r2, r3, r4, r5, r6, r7;
+int  r0, r1 = 12345, r2, r3, r4, r5, r6, r7;
 
 int PC;                    // Program Counter
 int MAR;                   // Memory Address
@@ -33,6 +33,19 @@ int decimalToBinary(int n) {
     }
     return binary;
 }
+
+//Function to Convert integer to binary string
+char *inttobinary(int num, char *buf, int bufSize) {
+    buf += (bufSize - 1);
+    
+    for (int i = 0; i <= 31; i++ , num >>= 1) {
+        *buf-- = (num & 1) + '0';
+        
+    }
+    
+    return buf;
+}
+
 
 //Function to convert large decimal numbers to binary. Answer returned in a char string
 char* decToBin(int decimalNumber){
@@ -251,6 +264,7 @@ void storeToMemory(char *inst){
             char *binary = (char*) malloc(10);
             sprintf(binary, "%d", bin);
             
+            
             int len = 12 - strlen(binary);
             memmove(binary+len, binary, strlen(binary));
             for ( int i = 0; i < len; i++ ){
@@ -275,6 +289,11 @@ void storeToMemory(char *inst){
             printf("MemAddr:%s\n", memAddr);
             strcat(code, memAddr);
             printf("code: %s %lu\n", code, sizeof(code));
+            int instruction = strtol(code,NULL,2);
+            
+            MEMORY[PC] = instruction ; // Store the instruction in Memory starting from the IM start address
+            printf("Final code to store in memory in int: %d", instruction);
+            PC++ ;
             argNum++;
             
         }
@@ -295,15 +314,18 @@ void storeToMemory(char *inst){
 int main(int argc, char *argv[]){
     MEMORY[1000] = 222;             //LETS ASSUME AT THAT MOMENT MEMORY[1000] HAS A VALUE 222 AND TRY TO FETCH IT.
     
+    // Initiating the instruction memory[IM] address from 10000. Needs to be changed for booting OS later.
+    PC = 10000;
+    
     for(int i=1; i< argc; i++) {
-        printf("%s\n", argv[i]);
+        printf("\n========Executing Instruction %d==========", i) ;
+        printf("\n %s\n", argv[i]);
         storeToMemory(argv[i]);
+        printf("The PC value %d\n", PC);
+        printf("The FLG value %d\n", FLG);
+        printf("The SP value %d\n", SP);
+        printf("The RA value %d\n", RA);
     }
-
-    printf("The PC value %d\n", PC);
-    printf("The FLG value %d\n", FLG);
-    printf("The SP value %d\n", SP);
-    printf("The RA value %d\n", RA);
     
     return 0 ;
 }

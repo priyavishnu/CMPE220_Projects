@@ -91,62 +91,64 @@ void execute_Fetch(char *operation, char *register1, int address){
     char *R7 = "R7";
     
     printf("\n\nReceived parameters are: \n\tOperation = %s, Register = %s, Address = %d\n", operation, register1, address);
+    
+    int index = address/4;
    
     int i = 0;
     if(strcmp(register1,R0) == 0){                    
-        r0 = MEMORY[address];
+        r0 = MEMORY[index];
         MAR = address;
-        MDR = MEMORY[address];
-        printf("\tData at location %d is %d \n\t\tValue in Register %s now is %d\n", address, MEMORY[address], R0, r0);
+        MDR = MEMORY[index];
+        printf("\tData at location %d is %d \n\t\tValue in Register %s now is %d\n", address, MEMORY[index], R0, r0);
         printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
     }
     else if(strcmp(register1,R1) == 0){                    
-        r1 = MEMORY[address];
+        r1 = MEMORY[index];
         MAR = address;
-        MDR = MEMORY[address];
-        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[address], R1, r1);
+        MDR = MEMORY[index];
+        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R1, r1);
         printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
     }
     else if(strcmp(register1,R2) == 0){                    
-        r2 = MEMORY[address];
+        r2 = MEMORY[index];
         MAR = address;
-        MDR = MEMORY[address];
-        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[address], R2, r2);
+        MDR = MEMORY[index];
+        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R2, r2);
         printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
     }
     else if(strcmp(register1,R3) == 0){                    
-        r3 = MEMORY[address];
+        r3 = MEMORY[index];
         MAR = address;
-        MDR = MEMORY[address];
-        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[address], R3, r3);
+        MDR = MEMORY[index];
+        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R3, r3);
         printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
     }
     else if(strcmp(register1,R4) == 0){                    
-        r4 = MEMORY[address];
+        r4 = MEMORY[index];
         MAR = address;
-        MDR = MEMORY[address];
-        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[address], R4, r4);
+        MDR = MEMORY[index];
+        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R4, r4);
         printf("\tThe MAR value %d\n\tThe MDR value %d\n", MAR, MDR);
     }
     else if(strcmp(register1,R5) == 0){                    
-        r5 = MEMORY[address];
+        r5 = MEMORY[index];
         MAR = address;
-        MDR = MEMORY[address];
-        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[address], R5, r5);
+        MDR = MEMORY[index];
+        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R5, r5);
         printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
     }
     else if(strcmp(register1,R6) == 0){                    
-        r6 = MEMORY[address];
+        r6 = MEMORY[index];
         MAR = address;
-        MDR = MEMORY[address];
-        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[address], R6, r6);
+        MDR = MEMORY[index];
+        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R6, r6);
         printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
     }
     else if(strcmp(register1,R7) == 0){                    
-        r7 = MEMORY[address];
+        r7 = MEMORY[index];
         MAR = address;
-        MDR = MEMORY[address];
-        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[address], R7, r7);
+        MDR = MEMORY[index];
+        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R7, r7);
         printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
     }
 }
@@ -163,64 +165,66 @@ void execute_store(char *operation, char *register1, int address){
     char *R7 = "R7";
        
     printf("\n\nReceived parameters are: \n\tOperation = %s, Register = %s, Address = %d\n", operation, register1, address);
+    
+    int index = address/4;
 
     int i = 0;
     if(strcmp(operation, STORE) == 0){             
         if(strcmp(register1,R0) == 0){
-            MEMORY[address] = r0;
+            MEMORY[index] = r0;
             MAR = address;
-            MDR = MEMORY[address];
+            MDR = MEMORY[index];
             
-            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[address], R0, r0);
+            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R0, r0);
             printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
         }
         else if(strcmp(register1,R1) == 0){
-            MEMORY[address] = r1;
+            MEMORY[index] = r1;
             MAR = address;
-            MDR = MEMORY[address];
-            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[address], R1, r1);
+            MDR = MEMORY[index];
+            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R1, r1);
             printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
         }
         else if(strcmp(register1,R2) == 0){
-            MEMORY[address] = r2;
+            MEMORY[index] = r2;
             MAR = address;
-            MDR = MEMORY[address];
-            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[address], R2, r2);
+            MDR = MEMORY[index];
+            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R2, r2);
             printf("\tThe MAR value %d\n\tThe MDR value %d\n", MAR, MDR);
         }
         else if(strcmp(register1,R3) == 0){
-            MEMORY[address] = r3;
+            MEMORY[index] = r3;
             MAR = address;
-            MDR = MEMORY[address];
-            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[address], R3, r3);
+            MDR = MEMORY[index];
+            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R3, r3);
             printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
         }
         else if(strcmp(register1,R4) == 0){
-            MEMORY[address] = r4;
+            MEMORY[index] = r4;
             MAR = address;
-            MDR = MEMORY[address];
-            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[address], R4, r4);
+            MDR = MEMORY[index];
+            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R4, r4);
             printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
         }
         else if(strcmp(register1,R5) == 0){
-            MEMORY[address] = r5;
+            MEMORY[index] = r5;
             MAR = address;
-            MDR = MEMORY[address];
-            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[address], R5, r5);
+            MDR = MEMORY[index];
+            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R5, r5);
             printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
         }
         else if(strcmp(register1,R6) == 0){
-            MEMORY[address] = r6;
+            MEMORY[index] = r6;
             MAR = address;
-            MDR = MEMORY[address];
-            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[address], R6, r6);
+            MDR = MEMORY[index];
+            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R6, r6);
             printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
         }
         else if(strcmp(register1,R7) == 0){
-            MEMORY[address] = r7;
+            MEMORY[index] = r7;
             MAR = address;
-            MDR = MEMORY[address];
-            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[address], R7, r7);
+            MDR = MEMORY[index];
+            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R7, r7);
             printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
         }
         
@@ -291,7 +295,7 @@ void storeToMemory(char *inst){
             printf("\nCode to store in memory in binary: %s \n", code);
             int instruction = strtol(code,NULL,2);
             
-            MEMORY[PC] = instruction ; // Store the instruction in Memory starting from the IM start address
+            MEMORY[PC/4] = instruction ; // Store the instruction in Memory starting from the IM start address
             printf("Final code to store in memory in int: %d", instruction);
             PC += 4 ;
             argNum++;
@@ -312,10 +316,10 @@ void storeToMemory(char *inst){
 
 
 int main(int argc, char *argv[]){
-    MEMORY[20000] = 222;             //LETS ASSUME AT THAT MOMENT MEMORY[1000] HAS A VALUE 222 AND TRY TO FETCH IT.
+    MEMORY[20000] = 222;             //LETS ASSUME AT THAT MOMENT MEMORY[20000], i.e. memory address 80000 HAS A VALUE 222 AND TRY TO FETCH IT.
     
-    // Initiating the instruction memory[IM] address from 10000. Needs to be changed for booting OS later.
-    PC = 10000;
+    // Initiating the instruction memory[IM] address from MEMORY[10000], i.e. memory address 40000. Needs to be changed for booting OS later.
+    PC = 40000;
     
     for(int i=1; i< argc; i++) {
         printf("\n========================Executing Instruction %d===========================", i) ;
@@ -335,5 +339,5 @@ int main(int argc, char *argv[]){
         printf("The value in register R7 is %d\n\n", r7);
     }
     
-    return 0 ;
+    return 0;
 }

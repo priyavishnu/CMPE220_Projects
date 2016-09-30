@@ -9,7 +9,7 @@
 int MEMORY[65536] = {0};   // Memory
 
 // General Purpose registers r0-r7
-int  r0 = 0, r1 = 0, r2 = 0, r3 = 0, r4 = 0, r5 = 0, r6 = 0, r7 = 0;	//Lets assume that the registers have some value 
+int  r0 = 0, r1 = 34, r2 = 5, r3 = 0, r4 = 0, r5 = 0, r6 = 0, r7 = 0;	//Lets assume that the registers have some value
 																										//before the execution began.
 
 int PC;                    // Program Counter
@@ -169,7 +169,8 @@ void execute_store(char *operation, char *register1, int address){
     int index = address/4;
 
     int i = 0;
-    if(strcmp(operation, STORE) == 0){             
+    if(strcmp(operation, STORE) == 0)
+    {
         if(strcmp(register1,R0) == 0){
             MEMORY[index] = r0;
             MAR = address;
@@ -231,12 +232,144 @@ void execute_store(char *operation, char *register1, int address){
     }
 }
 
+// function for register1  value
+int get_register1 (char *register1)
+{
+    char *R0 = "R0";
+    char *R1 = "R1";
+    char *R2 = "R2";
+    char *R3 = "R3";
+    char *R4 = "R4";
+    char *R5 = "R5";
+    char *R6 = "R6";
+    char *R7 = "R7";
+    
+    //find first register value
+    if(strcmp(register1,R0) == 0){
+        return r0;
+    }
+    else if(strcmp(register1,R1) == 0){
+        return r1;
+    }
+    else if(strcmp(register1,R2) == 0){
+        return r2;
+    }
+    else if(strcmp(register1,R3) == 0){
+       return r2;
+    }
+    else if(strcmp(register1,R4) == 0){
+        return r4;
+    }
+    else if(strcmp(register1,R5) == 0){
+        return r5;
+    }
+    else if(strcmp(register1,R6) == 0){
+        return r6;
+    }
+    else if(strcmp(register1,R7) == 0){
+        return r7;
+    }
+    
+    return 0;
+}
+
+int get_register2 (char *register2)
+{
+    char *R0 = "R0";
+    char *R1 = "R1";
+    char *R2 = "R2";
+    char *R3 = "R3";
+    char *R4 = "R4";
+    char *R5 = "R5";
+    char *R6 = "R6";
+    char *R7 = "R7";
+    
+    //find second register value
+    if(strcmp(register2,R0) == 0)
+    {
+        return r0;
+    }
+    else if(strcmp(register2,R1) == 0){
+        return r1;
+    }
+    else if(strcmp(register2,R2) == 0){
+        return r2;
+    }
+    else if(strcmp(register2,R3) == 0){
+        return r3;
+    }
+    else if(strcmp(register2,R4) == 0){
+        return r4;
+    }
+    else if(strcmp(register2,R5) == 0){
+        return r5;
+    }
+    else if(strcmp(register2,R6) == 0){
+        return r6;
+    }
+    else if(strcmp(register2,R7) == 0){
+        return r7;
+    }
+   
+    return 0;
+}
+
+
+// function for register2 value
+
+int call_mod(char *register1, char *register2)
+{
+    int qnt = 0;
+    int rmd = 0;
+    int i=0;
+    int dvnd=0,dvsr=0;
+    
+   
+    dvnd = get_register1(register1);
+    dvsr = get_register2(register2);
+    
+    
+    
+    if (dvsr == 0 || dvnd == 0)
+    {
+        rmd=0;
+    }
+    else
+        
+    {
+        
+        while(i<32)
+        {
+            rmd = (rmd << 1) | ((dvnd >> 31) & 0x1);
+            
+            if (rmd < dvsr)
+            {
+                qnt = (qnt << 1) ;
+            }
+            else
+            {
+                qnt = (qnt << 1) | 0x1;
+                rmd = rmd - dvsr;
+            }
+            
+            
+            dvnd = dvnd << 1;
+            
+            i++;
+        }
+        
+    }
+    
+    return rmd;
+    
+}
 
 //Function for storing the instruction to the memory
 void storeToMemory(char *inst){
     
     char *split = (char *) malloc(16);
     char * str = (char *) malloc(16);
+    
     strcpy(str,inst);
 
     char *operation;
@@ -244,6 +377,8 @@ void storeToMemory(char *inst){
     char *register2;
     int address;
     char code[34] = "";
+    
+    int mod_result;
     
     int argNum = 0;
     split = strtok(str, " ,.-");
@@ -257,29 +392,57 @@ void storeToMemory(char *inst){
                 strcat(code, "0001");
                 operation = split;
             }
+            else if(strcmp(split, "ADD")==0){
+                strcat(code, "0010");
+                operation = split;
+            }
+            else if(strcmp(split, "SUB")==0){
+                strcat(code, "0011");
+                operation = split;
+            }
+            else if(strcmp(split, "MUL")==0){
+                strcat(code, "0100");
+                operation = split;
+            }
+            else if(strcmp(split, "DIV")==0){
+                strcat(code, "0101");
+                operation = split;
+            }
+            else if(strcmp(split, "MOD")==0){
+                strcat(code, "0110");
+                operation = split;
+            }
             argNum++;
             printf("\nOpcode: %s \n", operation);
         }
         
-        else if(argNum == 1){              //register
+        else if(argNum == 1){              //register1
+            printf("inside register1 vaibale extract\n");
             register1 = split;
-            int reg = split[1] - '0';
-            int bin = decimalToBinary(reg);
-            char *binary = (char*) malloc(10);
-            sprintf(binary, "%d", bin);
+            int reg1 = split[1] - '0';
+            int bin1 = decimalToBinary(reg1);
+            char *binary_reg1 = (char*) malloc(10);
+            sprintf(binary_reg1, "%d", bin1);
             
             
-            int len = 12 - strlen(binary);
-            memmove(binary+len, binary, strlen(binary));
+            int len = 12 - strlen(binary_reg1);
+            memmove(binary_reg1+len, binary_reg1, strlen(binary_reg1));
             for ( int i = 0; i < len; i++ ){
-                binary[i] = '0';
+                binary_reg1[i] = '0';
             }
-            strcat(code, binary);
-            printf("Register: %s \n", binary);
+            strcat(code, binary_reg1);
+            printf("Register1: %s \n", binary_reg1);
             argNum++;
         }
         
-        else if(argNum == 2){           //memory
+        else if(argNum == 2)
+        {
+            
+            if((strcmp(operation,"FETCH")==0)||(strcmp(operation,"STORE")==0))
+                    {
+                        
+                        printf("inside memory vaibale extract\n");
+                                                //memory
             int addr = atoi(split);
             address = addr;
             char *memAddr = (char*) malloc(18);
@@ -300,19 +463,54 @@ void storeToMemory(char *inst){
             PC += 4 ;
             argNum++;
             
+                    }
+            else {
+                
+                printf("inside register2 vaibale extract\n");
+                                                            //register 2
+                register2 = split;
+                int reg2 = split[1] - '0';
+                int bin2 = decimalToBinary(reg2);
+                char *binary_reg2 = (char*) malloc(10);
+                sprintf(binary_reg2, "%d", bin2);
+                
+                
+                int len = 12 - strlen(binary_reg2);
+                memmove(binary_reg2+len, binary_reg2, strlen(binary_reg2));
+                for ( int i = 0; i < len; i++ ){
+                    binary_reg2[i] = '0';
+                }
+                strcat(code, binary_reg2);
+                printf("Register2: %s \n", binary_reg2);
+                argNum++;
+                    }
         }
+    
         split = strtok(NULL, " ,.-");
         
     }
+    
         
-    if(strcmp(operation, "STORE")==0){
+    if(strcmp(operation, "STORE")==0)
+    {
         execute_store(operation, register1, address);
     }
-    else if (strcmp(operation, "FETCH")==0){
+    else if (strcmp(operation, "FETCH")==0)
+    {
         execute_Fetch(operation, register1, address);
-    }  
+    }
+    else if (strcmp(operation, "MOD")==0)
+    {
+        
+        mod_result= call_mod(register1, register2);
+        
+        printf("mod result: %d \n", mod_result);
+    }
+    
     return;
 }
+
+
 
 
 int main(int argc, char *argv[]){

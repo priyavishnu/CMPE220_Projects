@@ -232,8 +232,8 @@ void execute_store(char *operation, char *register1, int address){
     }
 }
 
-// function for register1  value
-int get_register1 (char *register1)
+// function for register  value
+int get_register (char *reg)
 {
     char *R0 = "R0";
     char *R1 = "R1";
@@ -245,72 +245,31 @@ int get_register1 (char *register1)
     char *R7 = "R7";
     
     //find first register value
-    if(strcmp(register1,R0) == 0){
+    if(strcmp(reg,R0) == 0){
         return r0;
     }
-    else if(strcmp(register1,R1) == 0){
+    else if(strcmp(reg,R1) == 0){
         return r1;
     }
-    else if(strcmp(register1,R2) == 0){
+    else if(strcmp(reg,R2) == 0){
         return r2;
     }
-    else if(strcmp(register1,R3) == 0){
+    else if(strcmp(reg,R3) == 0){
        return r2;
     }
-    else if(strcmp(register1,R4) == 0){
+    else if(strcmp(reg,R4) == 0){
         return r4;
     }
-    else if(strcmp(register1,R5) == 0){
+    else if(strcmp(reg,R5) == 0){
         return r5;
     }
-    else if(strcmp(register1,R6) == 0){
+    else if(strcmp(reg,R6) == 0){
         return r6;
     }
-    else if(strcmp(register1,R7) == 0){
+    else if(strcmp(reg,R7) == 0){
         return r7;
     }
     
-    return 0;
-}
-
-int get_register2 (char *register2)
-{
-    char *R0 = "R0";
-    char *R1 = "R1";
-    char *R2 = "R2";
-    char *R3 = "R3";
-    char *R4 = "R4";
-    char *R5 = "R5";
-    char *R6 = "R6";
-    char *R7 = "R7";
-    
-    //find second register value
-    if(strcmp(register2,R0) == 0)
-    {
-        return r0;
-    }
-    else if(strcmp(register2,R1) == 0){
-        return r1;
-    }
-    else if(strcmp(register2,R2) == 0){
-        return r2;
-    }
-    else if(strcmp(register2,R3) == 0){
-        return r3;
-    }
-    else if(strcmp(register2,R4) == 0){
-        return r4;
-    }
-    else if(strcmp(register2,R5) == 0){
-        return r5;
-    }
-    else if(strcmp(register2,R6) == 0){
-        return r6;
-    }
-    else if(strcmp(register2,R7) == 0){
-        return r7;
-    }
-   
     return 0;
 }
 
@@ -325,8 +284,8 @@ int call_mod(char *register1, char *register2)
     int dvnd=0,dvsr=0;
     
    
-    dvnd = get_register1(register1);
-    dvsr = get_register2(register2);
+    dvnd = get_register(register1);
+    dvsr = get_register(register2);
     
     
     

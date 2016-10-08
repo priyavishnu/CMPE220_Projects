@@ -360,6 +360,53 @@ int call_mod(char *register1, char *register2)
     
 }
 
+//Function for adding two registers ADD R1, R2 =>  R1 = R1 + R2
+int add(char* reg1, char* reg2){
+    
+    int num1 = get_register(reg1);
+    int num2 = get_register(reg2);
+    int carryflag = 0;
+    
+    //Checking if either input is 0
+    if(num1 == 0){
+        return num2;
+    }
+    if(num2 == 0){
+        return num1;
+    }
+    
+    while(num2){
+        int carry = num1 & num2;
+        num1 = num1 ^ num2;
+        num2 = carry << 1;
+    }
+    if(num1 == 0){
+        carryflag = 1;
+    }
+    return num1;
+    
+}
+//Function for subtracting two registers SUB R1, R2 =>  R1 = R1 - R2
+int sub(char* reg1, char* reg2){
+    
+    int num1 = get_register(reg1);
+    int num2 = get_register(reg2);
+    
+    if(num2 == 0)
+        return num1;
+    
+    while(num2){
+        int borrow = (~num1) & num2;
+        num1 = num1 ^ num2;
+        num2 = borrow<<1;
+    }
+    
+    return num1;
+    
+}
+
+
+
 //Function for storing the instruction to the memory
 void storeToMemory(char *inst){
     
@@ -486,7 +533,6 @@ void storeToMemory(char *inst){
         
     }
     
-        
     if(strcmp(operation, "STORE")==0)
     {
         execute_store(operation, register1, address);
@@ -511,6 +557,15 @@ void storeToMemory(char *inst){
 
 			printf("Division Quotient: %d \n", divisionResult);
     }
+    else if(strcmp(operation, "ADD")==0){
+        int sum = add(register1, register2);
+        printf("Addition result: %d \n", sum);
+    }
+    else if(strcmp(operation, "SUB")==0){
+        int difference = sub(register1, register2);
+        printf("Subtraction result: %d \n", difference);
+    }
+
     return;
 }
 

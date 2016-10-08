@@ -273,6 +273,47 @@ int get_register (char *reg)
     return 0;
 }
 
+// function for register  value
+void set_register (char *reg,int val)
+{
+    char *R0 = "R0";
+    char *R1 = "R1";
+    char *R2 = "R2";
+    char *R3 = "R3";
+    char *R4 = "R4";
+    char *R5 = "R5";
+    char *R6 = "R6";
+    char *R7 = "R7";
+    
+    //find first register value
+    if(strcmp(reg,R0) == 0){
+       r0=val;
+    }
+    else if(strcmp(reg,R1) == 0){
+        r1=val;
+    }
+    else if(strcmp(reg,R2) == 0){
+        r2=val;
+    }
+    else if(strcmp(reg,R3) == 0){
+        r3=val;
+    }
+    else if(strcmp(reg,R4) == 0){
+        r4=val;
+    }
+    else if(strcmp(reg,R5) == 0){
+        r5=val;
+    }
+    else if(strcmp(reg,R6) == 0){
+        r6=val;
+    }
+    else if(strcmp(reg,R7) == 0){
+        r7=val;
+    }
+    
+    return;
+}
+
 //Function for ALU Division. Here (Register1 = Dividend) And (Register2 = Divisor) 
 //Original Divisor will be Divisor in the next recursion.
 
@@ -319,9 +360,9 @@ int division(int dividend, int divisor, int originalDivisor, int remainder)
 }
 
 
-// function for register2 value
+// function for ALU MOD function register 1=dividend and register 2= divisor
 
-int call_mod(char *register1, char *register2)
+void call_mod(char *register1, char *register2)
 {
     int qnt = 0;
     int rmd = 0;
@@ -345,7 +386,6 @@ int call_mod(char *register1, char *register2)
         while(i<32)
         {
             rmd = (rmd << 1) | ((dvnd >> 31) & 0x1);
-            printf("rem inside while = %d\n", rmd);
             
             if (rmd < dvsr)
             {
@@ -365,7 +405,9 @@ int call_mod(char *register1, char *register2)
         
     }
     
-    return rmd;
+    set_register(register2,rmd);
+    
+    return;
     
 }
 
@@ -449,7 +491,27 @@ int mul(char* reg1, char* reg2) {
     }		
     r2 = temp_result;
     return temp_result;
-}    
+}
+
+//function for load_effective adress function
+
+void call_leaq(int d,char *rb, char *ri,int s,char *dest_reg)
+{
+
+    int final_addr=0;
+    
+    int rb_value = get_register(rb);
+    int ri_value = get_register(ri);
+    
+    final_addr= d+rb_value+(s*ri_value);
+    
+    printf("Effective address loaded by leaq is : %d", final_addr);
+    
+    set_register(dest_reg,final_addr);
+    
+    return;
+    
+}
 
 
 //Function for storing the instruction to the memory
@@ -463,15 +525,23 @@ void storeToMemory(char *inst){
     char *operation;
     char *register1;
     char *register2;
+    char *Rb;
+    char *Ri;
+    char *dest;
+    int S=0,D=0;
+    
     int address;
     char code[34] = "";
     
     int mod_result;
     
     int argNum = 0;
-    split = strtok(str, " ,.-");
-    while(split != NULL){
-        if(argNum == 0){                    //opcode parsing
+    split = strtok(str, " ,.-()");
+    
+    while(split != NULL)
+    {
+        if(argNum == 0)
+        {                    //opcode parsing
             if(strcmp(split, "FETCH")==0){
                 strcat(code, "0000");
                 operation = split;
@@ -500,12 +570,28 @@ void storeToMemory(char *inst){
                 strcat(code, "0110");
                 operation = split;
             }
+            else if(strcmp(split, "LEAQ")==0){
+                strcat(code, "0111");
+                operation = split;
+            }
             argNum++;
             printf("\nOpcode: %s \n", operation);
         }
         
-        else if(argNum == 1){              //register1
-            printf("inside register1 variable extract\n");
+        else if(argNum == 1)
+        {
+            
+            if(strcmp(operation,"LEAQ")==0)
+            {
+                
+                D = atoi(split);
+                //printf("inside D variable extract %d\n", D);
+                argNum++;
+            
+            }
+            else
+            {
+            //register1
             register1 = split;
             int reg1 = split[1] - '0';
             int bin1 = decimalToBinary(reg1);
@@ -521,15 +607,17 @@ void storeToMemory(char *inst){
             strcat(code, binary_reg1);
             printf("Register1: %s \n", binary_reg1);
             argNum++;
+            }
         }
         
         else if(argNum == 2)
         {
             
+            
             if((strcmp(operation,"FETCH")==0)||(strcmp(operation,"STORE")==0))
-                    {
+            {
                         
-                        printf("inside memory vaibale extract\n");
+            printf("inside memory vaibale extract\n");
                                                 //memory
             int addr = atoi(split);
             address = addr;
@@ -551,8 +639,18 @@ void storeToMemory(char *inst){
             PC += 4 ;
             argNum++;
             
-                    }
-            else {
+            }
+            else if(strcmp(operation,"LEAQ")==0)
+            {
+            
+                
+                    Rb = split;
+                    argNum++;
+                    
+            }
+            
+            else
+            {
                 
                 printf("inside register2 variable extract\n");
                                                             //register 2
@@ -571,12 +669,53 @@ void storeToMemory(char *inst){
                 strcat(code, binary_reg2);
                 printf("Register2: %s \n", binary_reg2);
                 argNum++;
-                    }
+                }
+            
         }
-    
-        split = strtok(NULL, " ,.-");
+        else if(argNum == 3)
+        {
+            
+            if(strcmp(operation,"LEAQ")==0)
+            {
+                
+                Ri = split;
+                argNum++;
+                
+            }
+            
+        }
+        else if(argNum == 4)
+        {
+            
+            if(strcmp(operation,"LEAQ")==0)
+            {
+                
+                S = atoi(split);
+                //printf("inside S variable extract %d\n",S);
+                argNum++;
+                
+            }
+            
+        }
+        else if(argNum == 5)
+        {
+            
+            if(strcmp(operation,"LEAQ")==0)
+            {
+              
+                dest = split;
+                argNum++;
+                
+            }
+            
+        }
+
+        split = strtok(NULL, " ,.- ()");
         
     }
+    
+    
+    
     
     if(strcmp(operation, "STORE")==0)
     {
@@ -589,9 +728,8 @@ void storeToMemory(char *inst){
     else if (strcmp(operation, "MOD")==0)
     {
         
-        mod_result= call_mod(register1, register2);
+        call_mod(register1, register2);
         
-        printf("mod result: %d \n", mod_result);
     }
     else if (strcmp(operation, "DIV")==0)
     {
@@ -616,7 +754,15 @@ void storeToMemory(char *inst){
         int product  = mul(register1, register2);
         printf("Multiplication result: %d \n", product);
     }
+    else if(strcmp(operation, "LEAQ")==0)
+    {
+        
+        call_leaq(D,Rb,Ri,S,dest);
+        
+    }
+    
     return;
+    
 }
 
 

@@ -447,6 +447,7 @@ int mul(char* reg1, char* reg2) {
     if (negflag){
         temp_result = add(~temp_result,1);
     }		
+    R2 = temp_result;
     return temp_result;
 }    
 

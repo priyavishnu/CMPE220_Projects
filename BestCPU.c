@@ -9,7 +9,7 @@
 int MEMORY[65536] = {0};   // Memory
 
 // General Purpose registers r0-r7
-int  r0 = 0, r1 = 34, r2 = 5, r3 = 0, r4 = 0, r5 = 0, r6 = 0, r7 = 0;	//Lets assume that the registers have some value
+int  r0 = 0, r1 = 34, r2 = 5, r3 = 2, r4 = 3, r5 = 0, r6 = 0, r7 = 0;	//Lets assume that the registers have some value
 																										//before the execution began.
 
 int PC;                    // Program Counter
@@ -370,10 +370,8 @@ int call_mod(char *register1, char *register2)
 }
 
 //Function for adding two registers ADD R1, R2 =>  R1 = R1 + R2
-int add(char* reg1, char* reg2){
+int add(int num1, int num2){
     
-    int num1 = get_register(reg1);
-    int num2 = get_register(reg2);
     int carryflag = 0;
     
     //Checking if either input is 0
@@ -414,6 +412,43 @@ int sub(char* reg1, char* reg2){
     
 }
 
+
+//Function for multiplying two registers MUL R1,R2 => R2 = R2 * R1 
+int mul(char* reg1, char* reg2) {
+	
+    int num1 = get_register(reg1);
+    int num2 = get_register(reg2);
+    int temp_result = 0;
+    int negflag = 0;
+   
+    if (num1 == 0 || num2 == 0){
+	    return 0;
+    }	    
+    else if (num1 ==1){ 
+	return num2;
+    }
+    else if (num2 ==1){
+    	return num1;
+    }
+    else if ((num1 < 0 && num2 > 0) || (num1 > 0 && num2 < 0)){
+         negflag = 1;
+    }
+    else if (num1 <0 && num2 < 0){
+    	num1 = abs(num1);
+	num2 = abs(num2);
+    }
+    while(num2 != 0){ 
+    	if (num2 & 0x01){
+	    temp_result = add(temp_result,num1);
+	}
+	num1 <<= 1;
+	num2 >>= 1;
+    }
+    if (negflag){
+        temp_result = add(~temp_result,1);
+    }		
+    return temp_result;
+}    
 
 
 //Function for storing the instruction to the memory
@@ -469,7 +504,7 @@ void storeToMemory(char *inst){
         }
         
         else if(argNum == 1){              //register1
-            printf("inside register1 vaibale extract\n");
+            printf("inside register1 variable extract\n");
             register1 = split;
             int reg1 = split[1] - '0';
             int bin1 = decimalToBinary(reg1);
@@ -518,7 +553,7 @@ void storeToMemory(char *inst){
                     }
             else {
                 
-                printf("inside register2 vaibale extract\n");
+                printf("inside register2 variable extract\n");
                                                             //register 2
                 register2 = split;
                 int reg2 = split[1] - '0';
@@ -567,14 +602,19 @@ void storeToMemory(char *inst){
 			printf("Division Quotient: %d \n", divisionResult);
     }
     else if(strcmp(operation, "ADD")==0){
-        int sum = add(register1, register2);
+    	int num1 = get_register(register1);
+    	int num2 = get_register(register2);
+        int sum = add(num1,num2);
         printf("Addition result: %d \n", sum);
     }
     else if(strcmp(operation, "SUB")==0){
         int difference = sub(register1, register2);
         printf("Subtraction result: %d \n", difference);
     }
-
+    else if(strcmp(operation, "MUL")==0){
+        int product  = mul(register1, register2);
+        printf("Multiplication result: %d \n", product);
+    }
     return;
 }
 

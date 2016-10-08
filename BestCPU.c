@@ -273,6 +273,42 @@ int get_register (char *reg)
     return 0;
 }
 
+//Function for ALU Division. Here (Register1 = Dividend) And (Register2 = Divisor) 
+//Original Divisor will be Divisor in the next recursion.
+
+int division(int dividend, int divisor, int originalDivisor, int remainder)
+{
+    int quotient = 1;
+
+    if (dividend == divisor)
+    {
+        remainder = 0;
+        return 1;
+    }
+
+    else if (dividend < divisor)
+    {
+        remainder = dividend;
+        return 0;
+    }
+
+    while (divisor <= dividend)
+    {
+        divisor = divisor << 1;
+        quotient = quotient << 1;
+    }
+
+    if (dividend < divisor)
+    {
+        divisor >>= 1;
+        quotient >>= 1;
+    }
+
+    quotient = quotient + division(dividend - divisor, originalDivisor, originalDivisor, remainder);
+
+    return quotient;
+}
+
 
 // function for register2 value
 
@@ -300,6 +336,7 @@ int call_mod(char *register1, char *register2)
         while(i<32)
         {
             rmd = (rmd << 1) | ((dvnd >> 31) & 0x1);
+            printf("rem inside while = %d\n", rmd);
             
             if (rmd < dvsr)
             {
@@ -465,7 +502,15 @@ void storeToMemory(char *inst){
         
         printf("mod result: %d \n", mod_result);
     }
-    
+    else if (strcmp(operation, "DIV")==0)
+    {
+			int dividend = get_register(register1);
+			int divisor = get_register(register2);
+        
+			int divisionResult= division(dividend, divisor, divisor, 0);		//Initially we send remainder as '0'.
+
+			printf("Division Quotient: %d \n", divisionResult);
+    }
     return;
 }
 

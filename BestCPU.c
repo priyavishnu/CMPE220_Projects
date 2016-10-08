@@ -294,12 +294,21 @@ int division(int dividend, int divisor, int originalDivisor, int remainder)
 
     while (divisor <= dividend)
     {
+      /*printf("------------Entered While-------------------\n");
+    	printf("divisor = %d\n", divisor);
+    	printf("dividend = %d\n", dividend);
+    	printf("quotient = %d\n", quotient);*/
+
         divisor = divisor << 1;
         quotient = quotient << 1;
     }
 
     if (dividend < divisor)
     {
+	/*printf("----------entered IF---------------------\n");
+    printf("divisor = %d\n", divisor);
+    	printf("dividend = %d\n", dividend);
+    	printf("quotient = %d\n", quotient);*/
         divisor >>= 1;
         quotient >>= 1;
     }

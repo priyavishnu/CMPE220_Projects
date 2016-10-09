@@ -65,16 +65,6 @@ int decimalToBinary(int n) {
     return binary;
 }
 
-//Function to Convert integer to binary string. This code is not used for now, for future use.
-char *inttobinary(int num, char *buf, int bufSize) {
-    buf += (bufSize - 1);
-    
-    for (int i = 0; i <= 31; i++ , num >>= 1) {
-        *buf-- = (num & 1) + '0';
-        
-    }
-    return buf;
-}
 
 //Function to convert any decimal Number into Binary --------------Tarshith
 char *decimal_to_binary(int decimal, int No_of_bits_in_binary_you_need)
@@ -517,7 +507,7 @@ int mul(char* reg1, char* reg2) {
 	
     int num1 = get_register(reg1);
     int num2 = get_register(reg2);
-    int temp_result = 0;
+    int product = 0;
     int negflag = 0;
    
     if (num1 == 0 || num2 == 0){
@@ -538,16 +528,17 @@ int mul(char* reg1, char* reg2) {
     }
     while(num2 != 0){ 
     	if (num2 & 0x01){
-	    temp_result = add(temp_result,num1);
+	    product  = add(product,num1);
 	}
 	num1 <<= 1;
 	num2 >>= 1;
     }
     if (negflag){
-        temp_result = add(~temp_result,1);
-    }		
-    r2 = temp_result;
-    return temp_result;
+        product  = add(~product,1);
+    }
+    	    
+    set_register(reg2,product);
+    return product;
 }
 
 //function for load_effective adress function

@@ -12,8 +12,8 @@ int MEMORY[65536] = {0};   // Memory
 int     r0 = 0, 
         r1 = -2147483648,
         r2 = 5,
-        r3 = 0,
-        r4 = 3, 
+        r3 = -2,
+        r4 = 1562345, 
         r5 = 0, 
         r6 = 0, 
         r7 = 0;	//Lets assume that the registers have some value before the execution began. //r1 = 34
@@ -647,13 +647,7 @@ int mul(char* reg1, char* reg2) {
     int num1 = get_register(reg1);
     int num2 = get_register(reg2);
     int product = 0;
-    int negflag = 0;
     
-    printf("\n Value of reg1 %s", reg1);
-    printf("\n Value of reg2 %s", reg2);
-    printf("\n Value of num1 %d", num1);
-    printf("\n Value of num2 %d", num2);
-   
     if (num1 == 0 || num2 == 0){
 	    return 0;
     }	    
@@ -662,9 +656,6 @@ int mul(char* reg1, char* reg2) {
     }
     else if (num2 ==1){
     	return num1;
-    }
-    else if ((num1 < 0 && num2 > 0) || (num1 > 0 && num2 < 0)){
-         negflag = 1;
     }
     else if (num1 <0 && num2 < 0){
     	num1 = abs(num1);
@@ -676,9 +667,6 @@ int mul(char* reg1, char* reg2) {
 	}
 	num1 <<= 1;
 	num2 >>= 1;
-    }
-    if (negflag){
-        product  = add(~product,1);
     }
     
     //Setting flags

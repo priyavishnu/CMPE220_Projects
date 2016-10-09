@@ -10,8 +10,8 @@ int MEMORY[65536] = {0};   // Memory
 
 // General Purpose registers r0-r7
 int     r0 = 0, 
-        r1 = -2147483648,
-        r2 = -5,
+        r1 = 2,
+        r2 = 5,
         r3 = 3,
         r4 = 3, 
         r5 = 0, 
@@ -303,7 +303,7 @@ int get_register (char *reg)
     char *R5 = "R5";
     char *R6 = "R6";
     char *R7 = "R7";
-    
+
     //find first register value
     if(strcmp(reg,R0) == 0){
         return r0;
@@ -648,6 +648,8 @@ int mul(char* reg1, char* reg2) {
     int product = 0;
     int negflag = 0;
     
+    printf("\n Value of reg1 %s", reg1);
+    printf("\n Value of reg2 %s", reg2);
     printf("\n Value of num1 %d", num1);
     printf("\n Value of num2 %d", num2);
    
@@ -935,7 +937,7 @@ void storeInstructionToMemory(char *filename){
                 
             }
             
-            split = strtok(NULL, " ,.- ()");
+            split = strtok(NULL, " ,.- ()\n");
             
         }
         

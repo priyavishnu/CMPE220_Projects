@@ -498,6 +498,8 @@ int division(int dividend, int divisor, int originalDivisor, int remainder)
 
     quotient = quotient + division(dividend - divisor, originalDivisor, originalDivisor, remainder);
     
+    //quotient = add (quotient, division(dividend - divisor, originalDivisor, originalDivisor, remainder));
+    
     //Setting flags
     set_zero(quotient);
     set_sign(quotient);

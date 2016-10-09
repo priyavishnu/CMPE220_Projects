@@ -10,13 +10,14 @@ int MEMORY[65536] = {0};   // Memory
 
 // General Purpose registers r0-r7
 int     r0 = 0, 
-        r1 = 34, 
-        r2 = 5, 
-        r3 = 2, 
+        r1 = -2147483648,
+        r2 = 5,
+        r3 = 3,
         r4 = 3, 
         r5 = 0, 
         r6 = 0, 
-        r7 = 0;	//Lets assume that the registers have some value before the execution began.
+        r7 = 0;	//Lets assume that the registers have some value before the execution began. //r1 = 34
+
 
 int         PC = 40000;            // Program Counter(Initiating the instruction memory[IM] address from MEMORY[10000], i.e. memory address 40000. Needs to be changed for booting OS later)
 int         MAR;                   // Memory Address
@@ -51,10 +52,10 @@ const int   ZERO = 0;               // Zero Address Register
 
 /*Flags
  
- Zero flag = LSB
- Sign flag = LSB + 1
- Carry flag = LSB + 2
- Overflow flag = LSB + 3
+ Zero flag = FLG[0]
+ Sign flag = FLG[1]
+ Carry flag = FLG[2]
+ Overflow flag = FLG[3]
  
  */
 
@@ -376,7 +377,9 @@ void set_zero(int num){
     if(num == 0){
         FLG = FLG | 0x01;
     }
-    
+    else if(FLG& 0x1){
+        FLG = FLG ^ 0x01;
+    }
     return;
 }
 
@@ -386,25 +389,62 @@ void set_sign(int num){
     if(num<0){
         FLG = FLG | 0x02;
     }
-    
+    else if((FLG>>1)& 0x01){
+        FLG = FLG ^ 0x02;
+    }
     return;
 }
 
 //Function to set carry flag
-void set_carry(){
+void set_carry(int carry){
     
-    FLG = FLG | 0x04;
+    if(carry == 1){
+        FLG = FLG | 0x04;
+    }
+    
     
     return;
 }
 
 //Function to set overflow flag
-void set_carry(){
+void set_overflow_add(int num1, int num2, int result){
     
-    FLG = FLG | 0x08;
+    int msbNum1, msbNum2, msbResult;
+    
+    msbNum1 = (num1>>31) & 0x1;
+    msbNum2 = (num2>>31) & 0x1;
+    msbResult = (result>>31) & 0x1;
+    
+    
+    if((msbNum1 == msbNum2) && (msbResult != msbNum1)){
+        FLG = FLG | 0x08;
+    }
+    else if((FLG>>3) & 0x1){
+        FLG = FLG ^ 0x08;
+    }
     
     return;
 }
+
+//Function to set overflow flag
+void set_overflow_sub(int num1, int num2, int result){
+    
+    int msbNum1, msbNum2, msbResult;
+    
+    msbNum1 = (num1>>31) & 0x1;
+    msbNum2 = (num2>>31) & 0x1;
+    msbResult = (result>>31) & 0x1;
+    
+    if((msbNum1 != msbNum2) && (msbResult == msbNum2)){
+            FLG = FLG | 0x08;
+        }
+    else if((FLG>>3) & 0x1){
+        FLG = FLG ^ 0x08;
+    }
+    
+    return;
+}
+
 
 
 //Function for ALU Division. Here (Register1 = Dividend) And (Register2 = Divisor) 
@@ -515,12 +555,14 @@ void call_mod(char *register1, char *register2)
 }
 
 //Function for adding two registers ADD R1, R2 =>  R1 = R1 + R2
-int add(char* reg1, char* reg2){
+int add(int num1, int num2){
     
-    int num1 = get_register(reg1);
-    int num2 = get_register(reg2);
+    //int carrybit = 0, carrybitprev = 0;
     
     //Checking if either input is 0
+    
+    int n1 = num1, n2 = num2;
+    
     if(num1 == 0){
         return num2;
     }
@@ -532,16 +574,15 @@ int add(char* reg1, char* reg2){
     while(num2){
         int carry = num1 & num2;
         num1 = num1 ^ num2;
+        
         num2 = carry << 1;
     }
     
     //Setting flags
     set_zero(num1);
     set_sign(num1);
-    
-    //Storing result in register
-    set_register(reg2,num1);
-    
+    //set_carry(carrybit);
+    set_overflow_add(n1, n2, num1);
     
     return num1;
     
@@ -549,8 +590,12 @@ int add(char* reg1, char* reg2){
 //Function for subtracting two registers SUB R1, R2 =>  R1 = R1 - R2
 int sub(char* reg1, char* reg2){
     
+    //int carrybit = 0, carrybitprev = 0;
+
     int num1 = get_register(reg1);
     int num2 = get_register(reg2);
+    
+    int n1 = num1, n2 = num2;
     
     if(num2 == 0)
         return num1;
@@ -559,12 +604,16 @@ int sub(char* reg1, char* reg2){
         
         int borrow = (~num1) & num2;
         num1 = num1 ^ num2;
+        
+        
         num2 = borrow<<1;
     }
     
     //Setting flags
     set_zero(num1);
     set_sign(num1);
+    //set_carry(carrybit);
+    set_overflow_sub(n1, n2, num1);
     
     //Storing result in register
     set_register(reg2,num1);
@@ -882,7 +931,13 @@ void storeToMemory(char *inst){
 			printf("Division Quotient: %d \n", divisionResult);
     }
     else if(strcmp(operation, "ADD")==0){
-        int sum = add(register1, register2);
+        
+        int num1 = get_register(register1);
+        int num2 = get_register(register2);
+        
+        int sum = add(num1, num2);
+        set_register(register2, sum);
+        
         printf("Addition result: %d \n", sum);
     }
     else if(strcmp(operation, "SUB")==0){

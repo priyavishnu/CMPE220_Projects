@@ -49,6 +49,15 @@ const int   ZERO = 0;               // Zero Address Register
             = 01110,
             = 01111     */
 
+/*Flags
+ 
+ Zero flag = LSB
+ Sign flag = LSB + 1
+ Carry flag = LSB + 2
+ Overflow flag = LSB + 3
+ 
+ */
+
 
 //Function to convert decimal to binary
 int decimalToBinary(int n) {
@@ -302,7 +311,7 @@ int get_register (char *reg)
         return r2;
     }
     else if(strcmp(reg,R3) == 0){
-       return r2;
+       return r3;
     }
     else if(strcmp(reg,R4) == 0){
         return r4;
@@ -361,6 +370,43 @@ void set_register (char *reg,int val)
     return;
 }
 
+//Function to check whether or not to set zero flag
+void set_zero(int num){
+    
+    if(num == 0){
+        FLG = FLG | 0x01;
+    }
+    
+    return;
+}
+
+//Function to check whether or not to set sign flag
+void set_sign(int num){
+    
+    if(num<0){
+        FLG = FLG | 0x02;
+    }
+    
+    return;
+}
+
+//Function to set carry flag
+void set_carry(){
+    
+    FLG = FLG | 0x04;
+    
+    return;
+}
+
+//Function to set overflow flag
+void set_carry(){
+    
+    FLG = FLG | 0x08;
+    
+    return;
+}
+
+
 //Function for ALU Division. Here (Register1 = Dividend) And (Register2 = Divisor) 
 //Original Divisor will be Divisor in the next recursion.
 
@@ -402,7 +448,12 @@ int division(int dividend, int divisor, int originalDivisor, int remainder)
     }
 
     quotient = quotient + division(dividend - divisor, originalDivisor, originalDivisor, remainder);
-
+    
+    //Setting flags
+    set_zero(quotient);
+    set_sign(quotient);
+    
+    //Storing result in register
     return quotient;
 }
 
@@ -452,6 +503,11 @@ void call_mod(char *register1, char *register2)
         
     }
     
+    //Setting flags
+    set_zero(rmd);
+    set_sign(rmd);
+    
+    //Storing result in register
     set_register(register2,rmd);
     
     return;
@@ -459,14 +515,16 @@ void call_mod(char *register1, char *register2)
 }
 
 //Function for adding two registers ADD R1, R2 =>  R1 = R1 + R2
-int add(int num1, int num2){
+int add(char* reg1, char* reg2){
     
-    int carryflag = 0;
+    int num1 = get_register(reg1);
+    int num2 = get_register(reg2);
     
     //Checking if either input is 0
     if(num1 == 0){
         return num2;
     }
+    
     if(num2 == 0){
         return num1;
     }
@@ -476,9 +534,15 @@ int add(int num1, int num2){
         num1 = num1 ^ num2;
         num2 = carry << 1;
     }
-    if(num1 == 0){
-        carryflag = 1;
-    }
+    
+    //Setting flags
+    set_zero(num1);
+    set_sign(num1);
+    
+    //Storing result in register
+    set_register(reg2,num1);
+    
+    
     return num1;
     
 }
@@ -492,12 +556,22 @@ int sub(char* reg1, char* reg2){
         return num1;
     
     while(num2){
+        
         int borrow = (~num1) & num2;
         num1 = num1 ^ num2;
         num2 = borrow<<1;
     }
     
+    //Setting flags
+    set_zero(num1);
+    set_sign(num1);
+    
+    //Storing result in register
+    set_register(reg2,num1);
+    
+    
     return num1;
+    
     
 }
 
@@ -536,10 +610,17 @@ int mul(char* reg1, char* reg2) {
     if (negflag){
         product  = add(~product,1);
     }
-    	    
+    
+    //Setting flags
+    set_zero(product);
+    set_sign(product);
+    
+    //Storing result in register
     set_register(reg2,product);
+    
     return product;
 }
+
 
 //function for load_effective adress function
 
@@ -801,9 +882,7 @@ void storeToMemory(char *inst){
 			printf("Division Quotient: %d \n", divisionResult);
     }
     else if(strcmp(operation, "ADD")==0){
-    	int num1 = get_register(register1);
-    	int num2 = get_register(register2);
-        int sum = add(num1,num2);
+        int sum = add(register1, register2);
         printf("Addition result: %d \n", sum);
     }
     else if(strcmp(operation, "SUB")==0){

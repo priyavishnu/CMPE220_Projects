@@ -30,6 +30,7 @@ const int   ZERO = 0;               // Zero Address Register
 #define INSTRUCTION_MEMORY_STACK_BASE    10000
 #define BOOT_MEMORY_BASE                     0
 #define STACK_TOP                        65536
+#define NUMBER_OF_INSTRUCTIONS              30
 
 /* Opcodes */
 
@@ -59,6 +60,8 @@ const int   ZERO = 0;               // Zero Address Register
  
  */
 
+//Function definition for printing all the values
+void print_values();
 
 //Function to convert decimal to binary
 int decimalToBinary(int n) {
@@ -644,6 +647,9 @@ int mul(char* reg1, char* reg2) {
     int num2 = get_register(reg2);
     int product = 0;
     int negflag = 0;
+    
+    printf("\n Value of num1 %d", num1);
+    printf("\n Value of num2 %d", num2);
    
     if (num1 == 0 || num2 == 0){
 	    return 0;
@@ -703,15 +709,22 @@ void call_leaq(int d,char *rb, char *ri,int s,char *dest_reg)
     
 }
 
-
 //Function for storing the instruction to the memory
-void storeToMemory(char *inst){
+void storeInstructionToMemory(char *filename){
     
+    char inst[NUMBER_OF_INSTRUCTIONS];
+    int lines = 0;
     char *split = (char *) malloc(16);
     char * str = (char *) malloc(16);
     
-    strcpy(str,inst);
-
+    FILE *instructions_file;
+    
+    instructions_file = fopen(filename,"r");
+    
+    if (instructions_file == 0){
+        printf("\nError in opening the file containing the instructions \n");
+    }
+    
     char *operation;
     char *register1;
     char *register2;
@@ -722,280 +735,287 @@ void storeToMemory(char *inst){
     
     char *binary_reg1 = (char*) malloc(10);
     char *binary_reg2 = (char*) malloc(10);
-
+    
     int address;
     char code[34] = "";
     
     int mod_result;
     
     int argNum = 0;
-    split = strtok(str, " ,.-()");
+    //split = strtok(str, " ,.-()");
     
-    while(split != NULL)
-    {
-        if(argNum == 0)
-        {                    //opcode parsing
-            if(strcmp(split, "FETCH")==0){
-                strcat(code, "00000");
-                operation = split;
-            }
-            else if(strcmp(split, "STORE")==0){
-                strcat(code, "00001");
-                operation = split;
-            }
-            else if(strcmp(split, "ADD")==0){
-                strcat(code, "00010");
-                operation = split;
-            }
-            else if(strcmp(split, "SUB")==0){
-                strcat(code, "00011");
-                operation = split;
-            }
-            else if(strcmp(split, "MUL")==0){
-                strcat(code, "00100");
-                operation = split;
-            }
-            else if(strcmp(split, "DIV")==0){
-                strcat(code, "00101");
-                operation = split;
-            }
-            else if(strcmp(split, "MOD")==0){
-                strcat(code, "00110");
-                operation = split;
-            }
-            else if(strcmp(split, "LEAQ")==0){
-                strcat(code, "00111");
-                operation = split;
-            }
-            argNum++;
-            printf("\nOpcode: in string: %s And in binary: %s \n", operation, code);
-        }
+    while (fgets(inst,NUMBER_OF_INSTRUCTIONS,instructions_file)!= NULL){
         
-        else if(argNum == 1)
+        strcpy(str,inst);
+        split = strtok(str, " ,.-()");
+        while(split != NULL)
         {
-            
-            if(strcmp(operation,"LEAQ")==0)
-            {
-                
-                D = atoi(split);
-                //printf("inside D variable extract %d\n", D);
+            if(argNum == 0)
+            {                    //opcode parsing
+                if(strcmp(split, "FETCH")==0){
+                    strcat(code, "00000");
+                    operation = split;
+                }
+                else if(strcmp(split, "STORE")==0){
+                    strcat(code, "00001");
+                    operation = split;
+                }
+                else if(strcmp(split, "ADD")==0){
+                    strcat(code, "00010");
+                    operation = split;
+                }
+                else if(strcmp(split, "SUB")==0){
+                    strcat(code, "00011");
+                    operation = split;
+                }
+                else if(strcmp(split, "MUL")==0){
+                    strcat(code, "00100");
+                    operation = split;
+                }
+                else if(strcmp(split, "DIV")==0){
+                    strcat(code, "00101");
+                    operation = split;
+                }
+                else if(strcmp(split, "MOD")==0){
+                    strcat(code, "00110");
+                    operation = split;
+                }
+                else if(strcmp(split, "LEAQ")==0){
+                    strcat(code, "00111");
+                    operation = split;
+                }
                 argNum++;
-            
-            }
-            else
-            {
-            //register1
-            register1 = split;
-            int reg1 = split[1] - '0';
-            int bin1 = decimalToBinary(reg1);
-            
-            sprintf(binary_reg1, "%d", bin1);
-            
-            
-            int len = 5 - strlen(binary_reg1);
-            memmove(binary_reg1+len, binary_reg1, strlen(binary_reg1));
-            for ( int i = 0; i < len; i++ ){
-                binary_reg1[i] = '0';
-            }
-            strcat(code, binary_reg1);
-            printf("Register1: %s \n", binary_reg1);
-            argNum++;
-            }
-        }
-        
-        else if(argNum == 2)
-        {
-            if((strcmp(operation,"FETCH")==0)||(strcmp(operation,"STORE")==0))
-            {
-                        
-            printf("inside memory vaibale extract\n");
-                                                //memory
-            int addr = atoi(split);
-            address = addr;
-            char *memAddr = (char*) malloc(17);
-            strcpy(memAddr,decToBin(addr));
-            
-            int len = 17 - strlen(memAddr);
-            memmove(memAddr+len, memAddr, strlen(memAddr));
-            for ( int i = 0; i < len; i++ )
-                memAddr[i] = '0';
-            
-            //unused register 2 value
-            strcat(code, "00000");
-            printf("Memory Address:%s\n", memAddr);
-            strcat(code, memAddr);
-            printf("\nCode to store in memory in binary: %s \n", code);
-            int instruction = strtol(code,NULL,2);
-            
-            MEMORY[PC/4] = instruction ; // Store the instruction in Memory starting from the IM start address
-            printf("Final code to store in memory in int: %d\n", instruction);
-            printf("instruction code is = %d and memory location at which it is stored is = %d\n", instruction, PC/4);
-            printf("Memory[PC/4] = %d\n", MEMORY[PC/4]);
-
-            char* instructionBinary = decimal_to_binary(instruction, 32);
-
-            PC += 4 ;
-            argNum++;
-            
-            }
-            else if(strcmp(operation,"LEAQ")==0)
-            {
-              Rb = split;
-              argNum++;
-              
+                printf("\nOpcode: in string: %s And in binary: %s \n", operation, code);
             }
             
-            else if(strcmp(operation,"ADD")==0 || 
-                    strcmp(operation,"SUB")==0 || 
-                    strcmp(operation,"DIV")==0 || 
-                    strcmp(operation,"MUL")==0 || 
-                    strcmp(operation,"MOD")==0)
-            {
-             //register 2
-             register2 = split;
-             int reg2 = split[1] - '0';
-             int bin2 = decimalToBinary(reg2);
-             sprintf(binary_reg2, "%d", bin2);
-             
-             
-             int len = 5 - strlen(binary_reg2);
-             memmove(binary_reg2+len, binary_reg2, strlen(binary_reg2));
-             for ( int i = 0; i < len; i++ ){
-                 binary_reg2[i] = '0';
-             }
-             strcat(code, binary_reg2);
-             printf("Register2: %s \n", binary_reg2);
-             strcat(code, "00000000000000000");         //UNUSED ADDRESS PART IN THE INSTRUCTION
-             int instruction = strtol(code,NULL,2);
-             MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
-             PC += 4;
-
-             argNum++;
-             printf("Final code of ALU instruction to store in memory is = %s\n", code);
-             printf("INSTRUCTION IS = %d\n", instruction);
-             }
-        }
-        else if(argNum == 3)
-        {
-            
-            if(strcmp(operation,"LEAQ")==0)
-            {
-             Ri = split;
-             argNum++;
-            }
-            
-        }
-        else if(argNum == 4)
-        {
-            
-            if(strcmp(operation,"LEAQ")==0)
+            else if(argNum == 1)
             {
                 
-                S = atoi(split);
-                //printf("inside S variable extract %d\n",S);
-                argNum++;
+                if(strcmp(operation,"LEAQ")==0)
+                {
+                    
+                    D = atoi(split);
+                    //printf("inside D variable extract %d\n", D);
+                    argNum++;
+                    
+                }
+                else
+                {
+                    //register1
+                    register1 = split;
+                    int reg1 = split[1] - '0';
+                    int bin1 = decimalToBinary(reg1);
+                    
+                    sprintf(binary_reg1, "%d", bin1);
+                    
+                    
+                    int len = 5 - strlen(binary_reg1);
+                    memmove(binary_reg1+len, binary_reg1, strlen(binary_reg1));
+                    for ( int i = 0; i < len; i++ ){
+                        binary_reg1[i] = '0';
+                    }
+                    strcat(code, binary_reg1);
+                    printf("Register1: %s \n", binary_reg1);
+                    argNum++;
+                }
+            }
+            
+            else if(argNum == 2)
+            {
+                if((strcmp(operation,"FETCH")==0)||(strcmp(operation,"STORE")==0))
+                {
+                    
+                    printf("inside memory vaibale extract\n");
+                    //memory
+                    int addr = atoi(split);
+                    address = addr;
+                    char *memAddr = (char*) malloc(17);
+                    strcpy(memAddr,decToBin(addr));
+                    
+                    int len = 17 - strlen(memAddr);
+                    memmove(memAddr+len, memAddr, strlen(memAddr));
+                    for ( int i = 0; i < len; i++ )
+                        memAddr[i] = '0';
+                    
+                    //unused register 2 value
+                    strcat(code, "00000");
+                    printf("Memory Address:%s\n", memAddr);
+                    strcat(code, memAddr);
+                    printf("\nCode to store in memory in binary: %s \n", code);
+                    int instruction = strtol(code,NULL,2);
+                    
+                    MEMORY[PC/4] = instruction ; // Store the instruction in Memory starting from the IM start address
+                    printf("Final code to store in memory in int: %d\n", instruction);
+                    printf("instruction code is = %d and memory location at which it is stored is = %d\n", instruction, PC/4);
+                    printf("Memory[PC/4] = %d\n", MEMORY[PC/4]);
+                    
+                    char* instructionBinary = decimal_to_binary(instruction, 32);
+                    
+                    PC += 4 ;
+                    argNum++;
+                    
+                }
+                else if(strcmp(operation,"LEAQ")==0)
+                {
+                    Rb = split;
+                    argNum++;
+                    
+                }
+                
+                else if(strcmp(operation,"ADD")==0 ||
+                        strcmp(operation,"SUB")==0 ||
+                        strcmp(operation,"DIV")==0 ||
+                        strcmp(operation,"MUL")==0 ||
+                        strcmp(operation,"MOD")==0)
+                {
+                    //register 2
+                    register2 = split;
+                    int reg2 = split[1] - '0';
+                    int bin2 = decimalToBinary(reg2);
+                    sprintf(binary_reg2, "%d", bin2);
+                    
+                    
+                    int len = 5 - strlen(binary_reg2);
+                    memmove(binary_reg2+len, binary_reg2, strlen(binary_reg2));
+                    for ( int i = 0; i < len; i++ ){
+                        binary_reg2[i] = '0';
+                    }
+                    strcat(code, binary_reg2);
+                    printf("Register2: %s \n", binary_reg2);
+                    strcat(code, "00000000000000000");         //UNUSED ADDRESS PART IN THE INSTRUCTION
+                    int instruction = strtol(code,NULL,2);
+                    MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
+                    printf("Final code of ALU instruction to store in memory is = %s\n", code);
+                    printf("Storing at address = %d\n",MEMORY[PC/4]);
+                    printf("INSTRUCTION IS = %d\n", instruction);
+                    PC += 4;
+                    
+                    argNum++;
+                }
+            }
+            else if(argNum == 3)
+            {
+                
+                if(strcmp(operation,"LEAQ")==0)
+                {
+                    Ri = split;
+                    argNum++;
+                }
+                
+            }
+            else if(argNum == 4)
+            {
+                
+                if(strcmp(operation,"LEAQ")==0)
+                {
+                    
+                    S = atoi(split);
+                    //printf("inside S variable extract %d\n",S);
+                    argNum++;
+                    
+                }
+                
+            }
+            else if(argNum == 5)
+            {
+                
+                if(strcmp(operation,"LEAQ")==0)
+                {
+                    
+                    dest = split;
+                    argNum++;
+                    
+                }
                 
             }
             
+            split = strtok(NULL, " ,.- ()");
+            
         }
-        else if(argNum == 5)
+        
+        
+        
+        
+        if(strcmp(operation, "STORE")==0)
+        {
+            execute_store(operation, register1, address);
+        }
+        else if (strcmp(operation, "FETCH")==0)
+        {
+            execute_Fetch(operation, register1, address);
+        }
+        else if (strcmp(operation, "MOD")==0)
         {
             
-            if(strcmp(operation,"LEAQ")==0)
-            {
-              
-                dest = split;
-                argNum++;
-                
-            }
+            call_mod(register1, register2);
             
         }
-
-        split = strtok(NULL, " ,.- ()");
+        else if (strcmp(operation, "DIV")==0)
+        {
+            int dividend = get_register(register1);
+            int divisor = get_register(register2);
+            
+            int divisionResult= division(dividend, divisor, divisor, 0);		//Initially we send remainder as '0'.
+            set_register(register2, divisionResult);
+            
+            printf("Division Quotient: %d \n", divisionResult);
+        }
+        else if(strcmp(operation, "ADD")==0){
+            int num1 = get_register(register1);
+            int num2 = get_register(register2);
+            int sum = add(num1,num2);
+            printf("Addition result: %d \n", sum);
+        }
+        else if(strcmp(operation, "SUB")==0){
+            int difference = sub(register1, register2);
+            printf("Subtraction result: %d \n", difference);
+        }
+        else if(strcmp(operation, "MUL")==0){
+            int product  = mul(register1, register2);
+            printf("\n Multiplication result: %d \n", product);
+        }
+        else if(strcmp(operation, "LEAQ")==0)
+        {
+            
+            call_leaq(D,Rb,Ri,S,dest);
+            
+        }
+        
+        printf("\n========================Values after executing instruction : %s ================================", operation) ;
+        print_values();
+        
+        return;
         
     }
+}
+void print_values(){
     
+    printf("\n\nThe PC value is %d\n",PC);
+    printf("The FLG value is %d\n", FLG);
+    printf("The SP value  is %d\n", SP);
+    printf("The RA value  is %d\n\n", RA);
     
-    
-    
-    if(strcmp(operation, "STORE")==0)
-    {
-        execute_store(operation, register1, address);
-    }
-    else if (strcmp(operation, "FETCH")==0)
-    {
-        execute_Fetch(operation, register1, address);
-    }
-    else if (strcmp(operation, "MOD")==0)
-    {
-        
-        call_mod(register1, register2);
-        
-    }
-    else if (strcmp(operation, "DIV")==0)
-    {
-			int dividend = get_register(register1);
-			int divisor = get_register(register2);
-        
-			int divisionResult= division(dividend, divisor, divisor, 0);		//Initially we send remainder as '0'.
-			set_register(register2, divisionResult);
-			
-			printf("Division Quotient: %d \n", divisionResult);
-    }
-    else if(strcmp(operation, "ADD")==0){
-        
-        int num1 = get_register(register1);
-        int num2 = get_register(register2);
-        
-        int sum = add(num1, num2);
-        set_register(register2, sum);
-        
-        printf("Addition result: %d \n", sum);
-    }
-    else if(strcmp(operation, "SUB")==0){
-        int difference = sub(register1, register2);
-        printf("Subtraction result: %d \n", difference);
-    }
-    else if(strcmp(operation, "MUL")==0){
-        int product  = mul(register1, register2);
-        printf("Multiplication result: %d \n", product);
-    }
-    else if(strcmp(operation, "LEAQ")==0)
-    {
-        
-        call_leaq(D,Rb,Ri,S,dest);
-        
-    }
+    printf("The value in register R0 is %d\n", r0);
+    printf("The value in register R1 is %d\n", r1);
+    printf("The value in register R2 is %d\n", r2);
+    printf("The value in register R3 is %d\n", r3);
+    printf("The value in register R4 is %d\n", r4);
+    printf("The value in register R5 is %d\n", r5);
+    printf("The value in register R6 is %d\n", r6);
+    printf("The value in register R7 is %d\n\n", r7);
     
     return;
     
 }
 
 
-
-
 int main(int argc, char *argv[]){
     MEMORY[20000] = 222;             //LETS ASSUME AT THAT MOMENT MEMORY[20000], i.e. memory address 80000 HAS A VALUE 222 AND TRY TO FETCH IT.
+    printf("\n========================Initial values before execution===========================") ;
+    print_values();
+    // read_instructions();
+    storeInstructionToMemory(argv[1]);
     
-    
-    
-    for(int i=1; i< argc; i++) {
-        printf("\n========================Executing Instruction %d===========================", i) ;
-        storeToMemory(argv[i]);
-        printf("\n\nThe PC value after %s Instruction is %d\n",argv[i], PC);
-        printf("The FLG value at the end of this Instruction is %d\n", FLG);
-        printf("The SP value at the end of this Instruction is %d\n", SP);
-        printf("The RA value at the end of this Instruction is %d\n\n", RA);
-
-        printf("The value in register R0 is %d\n", r0);
-        printf("The value in register R1 is %d\n", r1);
-        printf("The value in register R2 is %d\n", r2);
-        printf("The value in register R3 is %d\n", r3);
-        printf("The value in register R4 is %d\n", r4);
-        printf("The value in register R5 is %d\n", r5);
-        printf("The value in register R6 is %d\n", r6);
-        printf("The value in register R7 is %d\n\n", r7);
-    }
     
     return 0;
 }

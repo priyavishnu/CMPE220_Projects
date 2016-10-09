@@ -11,7 +11,7 @@ int MEMORY[65536] = {0};   // Memory
 // General Purpose registers r0-r7
 int     r0 = 0, 
         r1 = -2147483648,
-        r2 = 5,
+        r2 = -5,
         r3 = 3,
         r4 = 3, 
         r5 = 0, 
@@ -402,11 +402,27 @@ void set_carry(int carry){
         FLG = FLG | 0x04;
     }
     
-    
     return;
 }
 
-//Function to set overflow flag
+//Function to set carry flag when operation is add
+void set_carry_add(int num1, int num2, int result){
+    int msbNum1, msbNum2, msbResult;
+    
+    msbNum1 = (num1>>31) & 0x1;
+    msbNum2 = (num2>>31) & 0x1;
+    msbResult = (result>>31) & 0x1;
+    
+    if((msbNum1 && msbNum2) || (msbNum1 && !(msbResult)) ||(msbNum2 && !(msbResult)) ){
+        FLG = FLG | 0x04;
+    }
+    else if((FLG>>2) & 0x01){
+        FLG = FLG ^ 0x04;
+    }
+
+}
+
+//Function to set overflow flag when the operation is add
 void set_overflow_add(int num1, int num2, int result){
     
     int msbNum1, msbNum2, msbResult;
@@ -426,7 +442,7 @@ void set_overflow_add(int num1, int num2, int result){
     return;
 }
 
-//Function to set overflow flag
+//Function to set overflow flag when the operation is subtract
 void set_overflow_sub(int num1, int num2, int result){
     
     int msbNum1, msbNum2, msbResult;
@@ -557,8 +573,6 @@ void call_mod(char *register1, char *register2)
 //Function for adding two registers ADD R1, R2 =>  R1 = R1 + R2
 int add(int num1, int num2){
     
-    //int carrybit = 0, carrybitprev = 0;
-    
     //Checking if either input is 0
     
     int n1 = num1, n2 = num2;
@@ -581,7 +595,7 @@ int add(int num1, int num2){
     //Setting flags
     set_zero(num1);
     set_sign(num1);
-    //set_carry(carrybit);
+    set_carry_add(n1, n2, num1);
     set_overflow_add(n1, n2, num1);
     
     return num1;
@@ -589,8 +603,6 @@ int add(int num1, int num2){
 }
 //Function for subtracting two registers SUB R1, R2 =>  R1 = R1 - R2
 int sub(char* reg1, char* reg2){
-    
-    //int carrybit = 0, carrybitprev = 0;
 
     int num1 = get_register(reg1);
     int num2 = get_register(reg2);
@@ -612,7 +624,7 @@ int sub(char* reg1, char* reg2){
     //Setting flags
     set_zero(num1);
     set_sign(num1);
-    //set_carry(carrybit);
+    //set_carry();
     set_overflow_sub(n1, n2, num1);
     
     //Storing result in register

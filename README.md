@@ -2,5 +2,5 @@
 
 command input:
 
-./BestCPU <filename.txt>
+./BestCPU "filename.txt"
 

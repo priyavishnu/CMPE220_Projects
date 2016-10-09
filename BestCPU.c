@@ -725,26 +725,32 @@ void storeInstructionToMemory(char *filename){
         printf("\nError in opening the file containing the instructions \n");
     }
     
-    char *operation;
-    char *register1;
-    char *register2;
-    char *Rb;
-    char *Ri;
-    char *dest;
-    int S=0,D=0;
+    while (fgets(inst,NUMBER_OF_INSTRUCTIONS,instructions_file) != NULL){
+        lines++;
+    }
     
-    char *binary_reg1 = (char*) malloc(10);
-    char *binary_reg2 = (char*) malloc(10);
+    instructions_file = fopen(filename,"r");
     
-    int address;
-    char code[34] = "";
+    while (lines != 0){
+        fgets(inst,NUMBER_OF_INSTRUCTIONS,instructions_file);
+        char *operation;
+        char *register1;
+        char *register2;
+        char *Rb;
+        char *Ri;
+        char *dest;
+        int S=0,D=0;
     
-    int mod_result;
+        char *binary_reg1 = (char*) malloc(10);
+        char *binary_reg2 = (char*) malloc(10);
     
-    int argNum = 0;
-    //split = strtok(str, " ,.-()");
+        int address;
+        char code[34] = "";
     
-    while (fgets(inst,NUMBER_OF_INSTRUCTIONS,instructions_file)!= NULL){
+        int mod_result;
+    
+        int argNum = 0;
+
         
         strcpy(str,inst);
         split = strtok(str, " ,.-()");
@@ -984,9 +990,12 @@ void storeInstructionToMemory(char *filename){
         printf("\n========================Values after executing instruction : %s ================================", operation) ;
         print_values();
         
-        return;
-        
+        lines--;
     }
+    
+    fclose(instructions_file);
+    return;
+    
 }
 void print_values(){
     

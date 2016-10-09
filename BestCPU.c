@@ -9,16 +9,46 @@
 int MEMORY[65536] = {0};   // Memory
 
 // General Purpose registers r0-r7
-int  r0 = 0, r1 = 34, r2 = 5, r3 = 2, r4 = 3, r5 = 0, r6 = 0, r7 = 0;	//Lets assume that the registers have some value
-																										//before the execution began.
+int     r0 = 0, 
+        r1 = 34, 
+        r2 = 5, 
+        r3 = 2, 
+        r4 = 3, 
+        r5 = 0, 
+        r6 = 0, 
+        r7 = 0;	//Lets assume that the registers have some value before the execution began.
 
-int PC;                    // Program Counter
-int MAR;                   // Memory Address
-int MDR;                   // Memory Data Register
-int FLG;                   // Flag register
-int SP;                    // Stack Pointer
-int RA;                    // Return Address register
-const int ZERO = 0;        // Zero Address Register
+int         PC = 40000;            // Program Counter(Initiating the instruction memory[IM] address from MEMORY[10000], i.e. memory address 40000. Needs to be changed for booting OS later)
+int         MAR;                   // Memory Address
+int         MDR;                   // Memory Data Register
+int         FLG;                   // Flag register
+int         SP;                    // Stack Pointer
+int         RA;                    // Return Address register
+const int   ZERO = 0;               // Zero Address Register
+
+#define INSTRUCTION_MEMORY_STACK_BASE    10000
+#define BOOT_MEMORY_BASE                     0
+#define STACK_TOP                        65536
+
+/* Opcodes */
+
+/*	FETCH 	= 00000,
+	STORE 	= 00001,
+	ADD		= 00010,
+	SUB		= 00011,
+	MUL		= 00100
+	DIV		= 00101,
+	MOD		= 00110,
+	LEAQ 	= 00111,
+	ADDI    = 01000,
+    SUBI	= 01001,
+	MULI	= 01010,
+	DIVI	= 01011,
+	MODI	= 01100,
+            = 01101,     // For Future Instructions
+            = 01110,
+            = 01111     */
+
 
 //Function to convert decimal to binary
 int decimalToBinary(int n) {
@@ -46,6 +76,33 @@ char *inttobinary(int num, char *buf, int bufSize) {
     return buf;
 }
 
+//Function to convert any decimal Number into Binary --------------Tarshith
+char *decimal_to_binary(int decimal, int No_of_bits_in_binary_you_need)
+{
+   int bits, d, totalBits;
+   char *binary;
+ 
+   totalBits = 0;
+   binary = (char*)malloc(No_of_bits_in_binary_you_need+1);
+ 
+   if ( binary == NULL )
+      exit(EXIT_FAILURE);
+ 
+   for (bits = No_of_bits_in_binary_you_need-1 ; bits >= 0 ; bits--)
+   {
+      d = decimal >> bits;
+ 
+      if ( d & 1 )
+         *(binary+totalBits) = 1 + '0';
+      else
+         *(binary+totalBits) = 0 + '0';
+ 
+      totalBits++;
+   }
+   *(binary+totalBits) = '\0';
+ 
+   return  binary;
+}
 
 //Function to convert large decimal numbers to binary. Answer returned in a char string
 char* decToBin(int decimalNumber){
@@ -530,6 +587,9 @@ void storeToMemory(char *inst){
     char *dest;
     int S=0,D=0;
     
+    char *binary_reg1 = (char*) malloc(10);
+    char *binary_reg2 = (char*) malloc(10);
+
     int address;
     char code[34] = "";
     
@@ -543,39 +603,39 @@ void storeToMemory(char *inst){
         if(argNum == 0)
         {                    //opcode parsing
             if(strcmp(split, "FETCH")==0){
-                strcat(code, "0000");
+                strcat(code, "00000");
                 operation = split;
             }
             else if(strcmp(split, "STORE")==0){
-                strcat(code, "0001");
+                strcat(code, "00001");
                 operation = split;
             }
             else if(strcmp(split, "ADD")==0){
-                strcat(code, "0010");
+                strcat(code, "00010");
                 operation = split;
             }
             else if(strcmp(split, "SUB")==0){
-                strcat(code, "0011");
+                strcat(code, "00011");
                 operation = split;
             }
             else if(strcmp(split, "MUL")==0){
-                strcat(code, "0100");
+                strcat(code, "00100");
                 operation = split;
             }
             else if(strcmp(split, "DIV")==0){
-                strcat(code, "0101");
+                strcat(code, "00101");
                 operation = split;
             }
             else if(strcmp(split, "MOD")==0){
-                strcat(code, "0110");
+                strcat(code, "00110");
                 operation = split;
             }
             else if(strcmp(split, "LEAQ")==0){
-                strcat(code, "0111");
+                strcat(code, "00111");
                 operation = split;
             }
             argNum++;
-            printf("\nOpcode: %s \n", operation);
+            printf("\nOpcode: in string: %s And in binary: %s \n", operation, code);
         }
         
         else if(argNum == 1)
@@ -595,11 +655,11 @@ void storeToMemory(char *inst){
             register1 = split;
             int reg1 = split[1] - '0';
             int bin1 = decimalToBinary(reg1);
-            char *binary_reg1 = (char*) malloc(10);
+            
             sprintf(binary_reg1, "%d", bin1);
             
             
-            int len = 12 - strlen(binary_reg1);
+            int len = 5 - strlen(binary_reg1);
             memmove(binary_reg1+len, binary_reg1, strlen(binary_reg1));
             for ( int i = 0; i < len; i++ ){
                 binary_reg1[i] = '0';
@@ -612,8 +672,6 @@ void storeToMemory(char *inst){
         
         else if(argNum == 2)
         {
-            
-            
             if((strcmp(operation,"FETCH")==0)||(strcmp(operation,"STORE")==0))
             {
                         
@@ -621,66 +679,76 @@ void storeToMemory(char *inst){
                                                 //memory
             int addr = atoi(split);
             address = addr;
-            char *memAddr = (char*) malloc(18);
+            char *memAddr = (char*) malloc(17);
             strcpy(memAddr,decToBin(addr));
             
-            int len = 16 - strlen(memAddr);
+            int len = 17 - strlen(memAddr);
             memmove(memAddr+len, memAddr, strlen(memAddr));
             for ( int i = 0; i < len; i++ )
                 memAddr[i] = '0';
             
+            //unused register 2 value
+            strcat(code, "00000");
             printf("Memory Address:%s\n", memAddr);
             strcat(code, memAddr);
             printf("\nCode to store in memory in binary: %s \n", code);
             int instruction = strtol(code,NULL,2);
             
             MEMORY[PC/4] = instruction ; // Store the instruction in Memory starting from the IM start address
-            printf("Final code to store in memory in int: %d", instruction);
+            printf("Final code to store in memory in int: %d\n", instruction);
+            printf("instruction code is = %d and memory location at which it is stored is = %d\n", instruction, PC/4);
+            printf("Memory[PC/4] = %d\n", MEMORY[PC/4]);
+
+            char* instructionBinary = decimal_to_binary(instruction, 32);
+
             PC += 4 ;
             argNum++;
             
             }
             else if(strcmp(operation,"LEAQ")==0)
             {
-            
-                
-                    Rb = split;
-                    argNum++;
-                    
+              Rb = split;
+              argNum++;
+              
             }
             
-            else
+            else if(strcmp(operation,"ADD")==0 || 
+                    strcmp(operation,"SUB")==0 || 
+                    strcmp(operation,"DIV")==0 || 
+                    strcmp(operation,"MUL")==0 || 
+                    strcmp(operation,"MOD")==0)
             {
-                
-                printf("inside register2 variable extract\n");
-                                                            //register 2
-                register2 = split;
-                int reg2 = split[1] - '0';
-                int bin2 = decimalToBinary(reg2);
-                char *binary_reg2 = (char*) malloc(10);
-                sprintf(binary_reg2, "%d", bin2);
-                
-                
-                int len = 12 - strlen(binary_reg2);
-                memmove(binary_reg2+len, binary_reg2, strlen(binary_reg2));
-                for ( int i = 0; i < len; i++ ){
-                    binary_reg2[i] = '0';
-                }
-                strcat(code, binary_reg2);
-                printf("Register2: %s \n", binary_reg2);
-                argNum++;
-                }
-            
+             //register 2
+             register2 = split;
+             int reg2 = split[1] - '0';
+             int bin2 = decimalToBinary(reg2);
+             sprintf(binary_reg2, "%d", bin2);
+             
+             
+             int len = 5 - strlen(binary_reg2);
+             memmove(binary_reg2+len, binary_reg2, strlen(binary_reg2));
+             for ( int i = 0; i < len; i++ ){
+                 binary_reg2[i] = '0';
+             }
+             strcat(code, binary_reg2);
+             printf("Register2: %s \n", binary_reg2);
+             strcat(code, "00000000000000000");         //UNUSED ADDRESS PART IN THE INSTRUCTION
+             int instruction = strtol(code,NULL,2);
+             MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
+             PC += 4;
+
+             argNum++;
+             printf("Final code of ALU instruction to store in memory is = %s\n", code);
+             printf("INSTRUCTION IS = %d\n", instruction);
+             }
         }
         else if(argNum == 3)
         {
             
             if(strcmp(operation,"LEAQ")==0)
             {
-                
-                Ri = split;
-                argNum++;
-                
+             Ri = split;
+             argNum++;
             }
             
         }
@@ -737,7 +805,8 @@ void storeToMemory(char *inst){
 			int divisor = get_register(register2);
         
 			int divisionResult= division(dividend, divisor, divisor, 0);		//Initially we send remainder as '0'.
-
+			set_register(register2, divisionResult);
+			
 			printf("Division Quotient: %d \n", divisionResult);
     }
     else if(strcmp(operation, "ADD")==0){
@@ -771,13 +840,12 @@ void storeToMemory(char *inst){
 int main(int argc, char *argv[]){
     MEMORY[20000] = 222;             //LETS ASSUME AT THAT MOMENT MEMORY[20000], i.e. memory address 80000 HAS A VALUE 222 AND TRY TO FETCH IT.
     
-    // Initiating the instruction memory[IM] address from MEMORY[10000], i.e. memory address 40000. Needs to be changed for booting OS later.
-    PC = 40000;
+    
     
     for(int i=1; i< argc; i++) {
         printf("\n========================Executing Instruction %d===========================", i) ;
         storeToMemory(argv[i]);
-        printf("\n\nThe PC value at %s Instruction is %d\n",argv[i], PC);
+        printf("\n\nThe PC value after %s Instruction is %d\n",argv[i], PC);
         printf("The FLG value at the end of this Instruction is %d\n", FLG);
         printf("The SP value at the end of this Instruction is %d\n", SP);
         printf("The RA value at the end of this Instruction is %d\n\n", RA);

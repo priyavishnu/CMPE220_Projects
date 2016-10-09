@@ -10,9 +10,9 @@ int MEMORY[65536] = {0};   // Memory
 
 // General Purpose registers r0-r7
 int     r0 = 0, 
-        r1 = 2,
+        r1 = -2,
         r2 = 5,
-        r3 = 3,
+        r3 = 0,
         r4 = 3, 
         r5 = 0, 
         r6 = 0, 
@@ -894,7 +894,7 @@ void storeInstructionToMemory(char *filename){
                     int instruction = strtol(code,NULL,2);
                     MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
                     printf("Final code of ALU instruction to store in memory is = %s\n", code);
-                    printf("Storing at address = %d\n",MEMORY[PC/4]);
+                    printf("Storing at address = %d\n",PC/4);
                     printf("INSTRUCTION IS = %d\n", instruction);
                     PC += 4;
                     

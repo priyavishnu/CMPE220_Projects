@@ -10,7 +10,7 @@ int MEMORY[65536] = {0};   // Memory
 
 // General Purpose registers r0-r7
 int     r0 = 0, 
-        r1 = -2,
+        r1 = -2147483648,
         r2 = 5,
         r3 = 0,
         r4 = 3, 
@@ -53,10 +53,10 @@ const int   ZERO = 0;               // Zero Address Register
 
 /*Flags
  
- Zero flag = FLG[0]
- Sign flag = FLG[1]
- Carry flag = FLG[2]
- Overflow flag = FLG[3]
+    Zero flag = FLG[0]
+    Sign flag = FLG[1]
+    Carry flag = FLG[2]
+    Overflow flag = FLG[3]
  
  */
 
@@ -398,18 +398,9 @@ void set_sign(int num){
     return;
 }
 
-//Function to set carry flag
-void set_carry(int carry){
-    
-    if(carry == 1){
-        FLG = FLG | 0x04;
-    }
-    
-    return;
-}
 
 //Function to set carry flag when operation is add
-void set_carry_add(int num1, int num2, int result){
+void set_carry(int num1, int num2, int result){
     int msbNum1, msbNum2, msbResult;
     
     msbNum1 = (num1>>31) & 0x1;
@@ -463,7 +454,6 @@ void set_overflow_sub(int num1, int num2, int result){
     
     return;
 }
-
 
 
 //Function for ALU Division. Here (Register1 = Dividend) And (Register2 = Divisor) 
@@ -598,19 +588,28 @@ int add(int num1, int num2){
     //Setting flags
     set_zero(num1);
     set_sign(num1);
-    set_carry_add(n1, n2, num1);
+    set_carry(n1, n2, num1);
     set_overflow_add(n1, n2, num1);
     
     return num1;
     
 }
+
+//Function to find twos compliment of a number
+int twosCompliment (int num){
+    num = ~(num);
+    num = add(num, 1);
+    return num;
+}
+
+
 //Function for subtracting two registers SUB R1, R2 =>  R1 = R1 - R2
 int sub(char* reg1, char* reg2){
 
     int num1 = get_register(reg1);
     int num2 = get_register(reg2);
     
-    int n1 = num1, n2 = num2;
+    int n1 = num1, n2 = twosCompliment(num2);
     
     if(num2 == 0)
         return num1;
@@ -627,7 +626,7 @@ int sub(char* reg1, char* reg2){
     //Setting flags
     set_zero(num1);
     set_sign(num1);
-    //set_carry();
+    set_carry(n1,n2, num1);
     set_overflow_sub(n1, n2, num1);
     
     //Storing result in register

@@ -34,19 +34,19 @@ const int   ZERO = 0;               // Zero Address Register
 
 /* Opcodes */
 
-/*	FETCH 	= 00000   -   0,
-	STORE 	= 00001   -   1,
-	ADD		= 00010   -   2,
-	SUB		= 00011   -   3,
-	MUL		= 00100   -   4,
-	DIV		= 00101   -   5,
-	MOD		= 00110   -   6,
-	LEAQ 	= 00111   -   7,
-	ADDI    = 01000   -   8,
-    SUBI	= 01001   -   9,
-	MULI	= 01010   -   10,
-	DIVI	= 01011   -   11,
-	MODI	= 01100   -   12,
+/*	FETCH 	= 00000,
+	STORE 	= 00001,
+	ADD		= 00010,
+	SUB		= 00011,
+	MUL		= 00100
+	DIV		= 00101,
+	MOD		= 00110,
+	LEAQ 	= 00111,
+	ADDI    = 01000,
+    SUBI	= 01001,
+	MULI	= 01010,
+	DIVI	= 01011,
+	MODI	= 01100,
             = 01101,     // For Future Instructions
             = 01110,
             = 01111     */
@@ -150,6 +150,7 @@ void execute_Fetch(char *operation, char *register1, int address){
     char *R6 = "R6";
     char *R7 = "R7";
     
+    printf("\n\nReceived parameters are: \n\tOperation = %s, Register = %s, Address = %d\n", operation, register1, address);
     
     int index = address/4;
    
@@ -158,57 +159,57 @@ void execute_Fetch(char *operation, char *register1, int address){
         r0 = MEMORY[index];
         MAR = address;
         MDR = MEMORY[index];
-        printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[index], R0, r0);
-        printf("The MAR value %d\nThe MDR value %d\n\n", MAR, MDR);
+        printf("\tData at location %d is %d \n\t\tValue in Register %s now is %d\n", address, MEMORY[index], R0, r0);
+        printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
     }
     else if(strcmp(register1,R1) == 0){                    
         r1 = MEMORY[index];
         MAR = address;
         MDR = MEMORY[index];
-        printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[index], R1, r1);
-        printf("The MAR value %d\nThe MDR value %d\n\n", MAR, MDR);
+        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R1, r1);
+        printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
     }
     else if(strcmp(register1,R2) == 0){                    
         r2 = MEMORY[index];
         MAR = address;
         MDR = MEMORY[index];
-        printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[index], R2, r2);
-        printf("The MAR value %d\nThe MDR value %d\n\n", MAR, MDR);
+        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R2, r2);
+        printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
     }
     else if(strcmp(register1,R3) == 0){                    
         r3 = MEMORY[index];
         MAR = address;
         MDR = MEMORY[index];
-        printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[index], R3, r3);
-        printf("The MAR value %d\nThe MDR value %d\n\n", MAR, MDR);
+        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R3, r3);
+        printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
     }
     else if(strcmp(register1,R4) == 0){                    
         r4 = MEMORY[index];
         MAR = address;
         MDR = MEMORY[index];
-        printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[index], R4, r4);
-        printf("The MAR value %d\nThe MDR value %d\n\n", MAR, MDR);
+        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R4, r4);
+        printf("\tThe MAR value %d\n\tThe MDR value %d\n", MAR, MDR);
     }
     else if(strcmp(register1,R5) == 0){                    
         r5 = MEMORY[index];
         MAR = address;
         MDR = MEMORY[index];
-        printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[index], R5, r5);
-        printf("The MAR value %d\nThe MDR value %d\n\n", MAR, MDR);
+        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R5, r5);
+        printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
     }
     else if(strcmp(register1,R6) == 0){                    
         r6 = MEMORY[index];
         MAR = address;
         MDR = MEMORY[index];
-        printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[index], R6, r6);
-        printf("The MAR value %d\nThe MDR value %d\n\n", MAR, MDR);
+        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R6, r6);
+        printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
     }
     else if(strcmp(register1,R7) == 0){                    
         r7 = MEMORY[index];
         MAR = address;
         MDR = MEMORY[index];
-        printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[index], R7, r7);
-        printf("The MAR value %d\nThe MDR value %d\n\n", MAR, MDR);
+        printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R7, r7);
+        printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
     }
 }
 
@@ -222,6 +223,8 @@ void execute_store(char *operation, char *register1, int address){
     char *R5 = "R5";
     char *R6 = "R6";
     char *R7 = "R7";
+       
+    printf("\n\nReceived parameters are: \n\tOperation = %s, Register = %s, Address = %d\n", operation, register1, address);
     
     int index = address/4;
 
@@ -233,57 +236,57 @@ void execute_store(char *operation, char *register1, int address){
             MAR = address;
             MDR = MEMORY[index];
             
-            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[index], R0, r0);
-            printf("The MAR value %d\nThe MDR value %d\n\n", MAR, MDR);
+            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R0, r0);
+            printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
         }
         else if(strcmp(register1,R1) == 0){
             MEMORY[index] = r1;
             MAR = address;
             MDR = MEMORY[index];
-            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[index], R1, r1);
-            printf("The MAR value %d\nThe MDR value %d\n\n", MAR, MDR);
+            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R1, r1);
+            printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
         }
         else if(strcmp(register1,R2) == 0){
             MEMORY[index] = r2;
             MAR = address;
             MDR = MEMORY[index];
-            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[index], R2, r2);
-            printf("The MAR value %d\nThe MDR value %d\n", MAR, MDR);
+            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R2, r2);
+            printf("\tThe MAR value %d\n\tThe MDR value %d\n", MAR, MDR);
         }
         else if(strcmp(register1,R3) == 0){
             MEMORY[index] = r3;
             MAR = address;
             MDR = MEMORY[index];
-            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[index], R3, r3);
-            printf("The MAR value %d\nThe MDR value %d\n\n", MAR, MDR);
+            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R3, r3);
+            printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
         }
         else if(strcmp(register1,R4) == 0){
             MEMORY[index] = r4;
             MAR = address;
             MDR = MEMORY[index];
-            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[index], R4, r4);
-            printf("The MAR value %d\nThe MDR value %d\n\n", MAR, MDR);
+            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R4, r4);
+            printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
         }
         else if(strcmp(register1,R5) == 0){
             MEMORY[index] = r5;
             MAR = address;
             MDR = MEMORY[index];
-            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[index], R5, r5);
-            printf("The MAR value %d\nThe MDR value %d\n\n", MAR, MDR);
+            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R5, r5);
+            printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
         }
         else if(strcmp(register1,R6) == 0){
             MEMORY[index] = r6;
             MAR = address;
             MDR = MEMORY[index];
-            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[index], R6, r6);
-            printf("The MAR value %d\nThe MDR value %d\n\n", MAR, MDR);
+            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R6, r6);
+            printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
         }
         else if(strcmp(register1,R7) == 0){
             MEMORY[index] = r7;
             MAR = address;
             MDR = MEMORY[index];
-            printf("Data at location %d is %d \nValue in Register %s now is %d\n", address, MEMORY[index], R7, r7);
-            printf("The MAR value %d\nThe MDR value %d\n\n", MAR, MDR);
+            printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], R7, r7);
+            printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
         }
         
     }
@@ -630,9 +633,11 @@ int sub(char* reg1, char* reg2){
     
     //Storing result in register
     set_register(reg2,num1);
-
+    
+    
     return num1;
-       
+    
+    
 }
 
 
@@ -777,7 +782,7 @@ void storeInstructionToMemory(char *filename){
                     operation = split;
                 }
                 argNum++;
-                printf("\nOpcode in string: %s \nAnd in binary: %s \n\n", operation, code);
+                printf("\nOpcode: in string: %s And in binary: %s \n", operation, code);
             }
             
             else if(argNum == 1)
@@ -811,12 +816,13 @@ void storeInstructionToMemory(char *filename){
                     argNum++;
                 }
             }
-
-/******************************STORING THE INSTRUCTION IN THE MEMORY***********************/
+            
             else if(argNum == 2)
             {
                 if((strcmp(operation,"FETCH")==0)||(strcmp(operation,"STORE")==0))
                 {
+                    
+                    printf("inside memory vaibale extract\n");
                     //memory
                     int addr = atoi(split);
                     address = addr;
@@ -829,18 +835,20 @@ void storeInstructionToMemory(char *filename){
                         memAddr[i] = '0';
                     
                     //unused register 2 value
-                    printf("Register2: 00000");
                     strcat(code, "00000");
+                    printf("Memory Address:%s\n", memAddr);
                     strcat(code, memAddr);
-                    printf("\n\n***---Storing In Memory---*** \nMemory Location = PC/4 = %d\n", PC/4);
-                    printf("Binary ALU Instruction Stored = %s\n\n", code);  
-
-
-                    
-                    
+                    printf("\nCode to store in memory in binary: %s \n", code);
                     int instruction = strtol(code,NULL,2);
+                    
                     MEMORY[PC/4] = instruction ; // Store the instruction in Memory starting from the IM start address
+                    printf("Final code to store in memory in int: %d\n", instruction);
+                    printf("instruction code is = %d and memory location at which it is stored is = %d\n", instruction, PC/4);
+                    printf("Memory[PC/4] = %d\n", MEMORY[PC/4]);
+                    
                     char* instructionBinary = decimal_to_binary(instruction, 32);
+                    
+                    PC += 4 ;
                     argNum++;
                     
                 }
@@ -870,19 +878,18 @@ void storeInstructionToMemory(char *filename){
                         binary_reg2[i] = '0';
                     }
                     strcat(code, binary_reg2);
-                    printf("Register2: %s \n\n", binary_reg2);
+                    printf("Register2: %s \n", binary_reg2);
                     strcat(code, "00000000000000000");         //UNUSED ADDRESS PART IN THE INSTRUCTION
                     int instruction = strtol(code,NULL,2);
-                    
-                    printf("***---Storing In Memory---*** \nMemory Location = PC/4 = %d\n", PC/4);
                     MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
-                    printf("Binary ALU Instruction Stored = %s\n\n", code);                   
+                    printf("Final code of ALU instruction to store in memory is = %s\n", code);
+                    printf("Storing at address = %d\n",PC/4);
+                    printf("INSTRUCTION IS = %d\n", instruction);
+                    PC += 4;
                     
                     argNum++;
                 }
             }
-/*-------------------------"END OF"---- STORING THE INSTRUCTION IN THE MEMORY----------------*/
-
             else if(argNum == 3)
             {
                 
@@ -924,61 +931,52 @@ void storeInstructionToMemory(char *filename){
         }
         
         
-/****************************EXECUTING THE INSTRUCTION BASED ON THE OPERATION/OPCODE***********************/
-
-        char* instrucitonBinaryToExecute = decimal_to_binary(MEMORY[PC/4], 32);
-        printf("***---Reading Instruction From Memory---***\n");
-        printf("Binary Instruction Fetched From Memory Pointed By PC = %s,\n", instrucitonBinaryToExecute);
         
-        int i;
-        char opCodeBinary[4], registerABinary[5], registerBBinary[5], addressInInstructionBinary[17];
-
-        for(i = 0; i < 5; i++){
-            opCodeBinary[i] = instrucitonBinaryToExecute[i];
+        
+        if(strcmp(operation, "STORE")==0)
+        {
+            execute_store(operation, register1, address);
         }
-        for(i = 5; i < 10; i++){
-            registerABinary[i-5] = instrucitonBinaryToExecute[i];
+        else if (strcmp(operation, "FETCH")==0)
+        {
+            execute_Fetch(operation, register1, address);
         }
-        for(i = 10; i < 15; i++){
-            registerBBinary[i-10] = instrucitonBinaryToExecute[i];
+        else if (strcmp(operation, "MOD")==0)
+        {
+            
+            call_mod(register1, register2);
+            
         }
-        for(i = 15; i < 32; i++){
-            addressInInstructionBinary[i-15] = instrucitonBinaryToExecute[i];
+        else if (strcmp(operation, "DIV")==0)
+        {
+            int dividend = get_register(register1);
+            int divisor = get_register(register2);
+            
+            int divisionResult= division(dividend, divisor, divisor, 0);		//Initially we send remainder as '0'.
+            set_register(register2, divisionResult);
+            
+            printf("Division Quotient: %d \n", divisionResult);
         }
-
-        int opCodeInt = strtol(opCodeBinary,NULL,2);
-        int registerAInt = strtol(registerABinary,NULL,2);
-        int registerBInt = strtol(registerBBinary,NULL,2);
-        int addressInInstructionInt = strtol(addressInInstructionBinary,NULL,2);
-
-        printf("OP Code = %d\nRegister A = %d\nRegister B = %d\nAddress In The Instruction Format = %d\n", opCodeInt, registerAInt, registerBInt, addressInInstructionInt
-            );
-
-        switch(opCodeInt){
-            case 0: execute_Fetch(operation, register1, address);
-                    break;
-            case 1: execute_store(operation, register1, address);
-                    break;
-            case 2: printf("Addition result: %d \n", add(get_register(register1),get_register(register2)));
-                    break;
-            case 3: printf("Subtraction result: %d \n", sub(register1, register2));
-                    break;
-            case 4: printf("\n Multiplication result: %d \n", mul(register1, register2));
-                    break;
-            case 5: printf("Division Quotient: %d \n", division(get_register(register1), get_register(register2), get_register(register2), 0));
-                    int divisionResult = division(get_register(register1), get_register(register2), get_register(register2), 0);
-                    set_register(register2, divisionResult);
-                    break;
-            case 6: call_mod(register1, register2);
-                    break;
-            case 7: call_leaq(D,Rb,Ri,S,dest);
-                    break;
-            default: printf("UNEXPECTED OPCODE, PLEASE CHECK IF YOU ADDED THE OPERATION INTO THE INSTRUCTION SET ARCHITECTURE!");
+        else if(strcmp(operation, "ADD")==0){
+            int num1 = get_register(register1);
+            int num2 = get_register(register2);
+            int sum = add(num1,num2);
+            printf("Addition result: %d \n", sum);
         }
-
-        PC += 4;
-
-/*------------------------------"END OF"-----EXECUTING THE INSTRUCTION BASED ON THE OPERATION/OPCODE------*/
+        else if(strcmp(operation, "SUB")==0){
+            int difference = sub(register1, register2);
+            printf("Subtraction result: %d \n", difference);
+        }
+        else if(strcmp(operation, "MUL")==0){
+            int product  = mul(register1, register2);
+            printf("\n Multiplication result: %d \n", product);
+        }
+        else if(strcmp(operation, "LEAQ")==0)
+        {
+            
+            call_leaq(D,Rb,Ri,S,dest);
+            
+        }
         
         printf("\n========================Values after executing instruction : %s ================================", operation) ;
         print_values();

@@ -1080,11 +1080,14 @@ void storeInstructionToMemory(char *filename){
         }
         
         
-         printf("Final code of ALU instruction to store in memory is = %s\n", code);
+        printf("Final code of ALU instruction to store in memory is = %s\n", code);
         
-
-	void (*fun_ptr_arr[])(char*,char*) = {sub,mul};
-
+	//Using Function pointers for ALU operations. Since div and add use different function parameters, have used different function pointers for them
+	
+	void (*fun_ptr_arr[])(char*,char*) = {call_mod,sub,mul};
+	int (*fun_ptr_arr_div[])(int,int,int,int) = {division};
+	int (*fun_ptr_arr_add[])(int,int) = {add};
+        
         if(strcmp(operation, "STORE")==0)
         {
             execute_store(operation, register1, address);
@@ -1096,15 +1099,15 @@ void storeInstructionToMemory(char *filename){
         else if (strcmp(operation, "MOD")==0)
         {
             
-            call_mod(register1, register2);
+	    (*fun_ptr_arr[1])(register1, register2);	
+           // call_mod(register1, register2);
             
         }
         else if (strcmp(operation, "DIV")==0)
         {
             int dividend = get_register(register1);
             int divisor = get_register(register2);
-            
-            int divisionResult= division(dividend, divisor, divisor, 0);		//Initially we send remainder as '0'.
+            int divisionResult= (*fun_ptr_arr_div[0])(dividend, divisor, divisor, 0);		//Initially we send remainder as '0'.
             set_register(register2, divisionResult);
             
             printf("Division Quotient: %d \n", divisionResult);
@@ -1112,19 +1115,15 @@ void storeInstructionToMemory(char *filename){
         else if(strcmp(operation, "ADD")==0){
             int num1 = get_register(register1);
             int num2 = get_register(register2);
-            int sum = add(num1,num2);
+	    int sum = (*fun_ptr_arr_add[0])(num1,num2);;
             set_register(register2, sum);
             printf("Addition result: %d \n", sum);
         }
         else if(strcmp(operation, "SUB")==0){
-	    (*fun_ptr_arr[0])(register1, register2);	
-           // int difference = sub(register1, register2);
-           // printf("Subtraction result: %d \n", difference);
+	    (*fun_ptr_arr[1])(register1, register2);	
         }
         else if(strcmp(operation, "MUL")==0){
-	    (*fun_ptr_arr[1])(register1, register2);	
-           // int product  = mul(register1, register2);
-           // printf("\n Multiplication result: %d \n", product);
+	    (*fun_ptr_arr[2])(register1, register2);	
         }
         else if(strcmp(operation, "LEAQ")==0)
         {

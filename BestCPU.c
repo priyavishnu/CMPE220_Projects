@@ -10,8 +10,8 @@ int MEMORY[65536] = {0};   // Memory
 
 // General Purpose registers r0-r7
 int     r0 = 0, 
-        r1 = -2147483648,
-        r2 = 5,
+        r1 = 20000,
+        r2 = -1,
         r3 = -2,
         r4 = 1562345, 
         r5 = 0, 
@@ -416,6 +416,13 @@ void set_carry(int num1, int num2, int result){
 
 }
 
+//Function to set carry flag for division
+void set_carry_div(){
+    //printf("IN carry div\n");
+    FLG = FLG | 0x04;
+}
+
+
 //Function to set overflow flag when the operation is add
 void set_overflow_add(int num1, int num2, int result){
     
@@ -455,58 +462,12 @@ void set_overflow_sub(int num1, int num2, int result){
     return;
 }
 
-
-//Function for ALU Division. Here (Register1 = Dividend) And (Register2 = Divisor) 
-//Original Divisor will be Divisor in the next recursion.
-
-int division(int dividend, int divisor, int originalDivisor, int remainder)
-{
-    int quotient = 1;
-
-    if (dividend == divisor)
-    {
-        remainder = 0;
-        return 1;
-    }
-
-    else if (dividend < divisor)
-    {
-        remainder = dividend;
-        return 0;
-    }
-
-    while (divisor <= dividend)
-    {
-      /*printf("------------Entered While-------------------\n");
-    	printf("divisor = %d\n", divisor);
-    	printf("dividend = %d\n", dividend);
-    	printf("quotient = %d\n", quotient);*/
-
-        divisor = divisor << 1;
-        quotient = quotient << 1;
-    }
-
-    if (dividend < divisor)
-    {
-	/*printf("----------entered IF---------------------\n");
-    printf("divisor = %d\n", divisor);
-    	printf("dividend = %d\n", dividend);
-    	printf("quotient = %d\n", quotient);*/
-        divisor >>= 1;
-        quotient >>= 1;
-    }
-
-    quotient = quotient + division(dividend - divisor, originalDivisor, originalDivisor, remainder);
-    
-    //quotient = add (quotient, division(dividend - divisor, originalDivisor, originalDivisor, remainder));
-    
-    //Setting flags
-    set_zero(quotient);
-    set_sign(quotient);
-    
-    //Storing result in register
-    return quotient;
+//Function to set overflow for div
+void set_overflow_div(){
+    //printf("IN overflow div\n");
+    FLG = FLG | 0x08;
 }
+
 
 
 // function for ALU MOD function register 1=dividend and register 2= divisor
@@ -678,6 +639,93 @@ int mul(char* reg1, char* reg2) {
     
     return product;
 }
+
+//Function for ALU Division. Here (Register1 = Dividend) And (Register2 = Divisor)
+//Original Divisor will be Divisor in the next recursion.
+
+int division(int dividend, int divisor, int originalDivisor, int remainder)
+{
+    int quotient = 1;
+    int signFlag = 0;
+    
+    //printf("DIVIDEND %d     DIVISOR %d \n", dividend, divisor);
+    
+    if(dividend == -2147483648 && divisor == -1){
+        set_overflow_div();
+        set_carry_div();
+        return 0;
+    }
+    
+    if(dividend < 0){
+        printf("DIVIDEND %d\n", dividend);
+        signFlag = signFlag ^ 0x01;
+        dividend = twosCompliment(dividend);
+    }
+    if(divisor < 0){
+        printf("DIVISOR %d\n", divisor);
+        signFlag = signFlag ^ 0x01;
+        divisor = twosCompliment(divisor);
+        printf("DIVISOR %d\n", divisor);
+    }
+    if(originalDivisor < 0){
+        originalDivisor = twosCompliment(originalDivisor);
+        
+    }
+
+    
+    if (dividend == divisor)
+    {
+        remainder = 0;
+        return 1;
+    }
+    
+    else if (dividend < divisor)
+    {
+        remainder = dividend;
+        return 0;
+    }
+    
+    while (divisor <= dividend)
+    {
+        /*printf("------------Entered While-------------------\n");
+         printf("divisor = %d\n", divisor);
+         printf("dividend = %d\n", dividend);
+         printf("quotient = %d\n", quotient);*/
+        
+        divisor = divisor << 1;
+        quotient = quotient << 1;
+    }
+    
+    if (dividend < divisor)
+    {
+        /*printf("----------entered IF---------------------\n");
+         printf("divisor = %d\n", divisor);
+         printf("dividend = %d\n", dividend);
+         printf("quotient = %d\n", quotient);*/
+        divisor >>= 1;
+        quotient >>= 1;
+    }
+    
+    //quotient = quotient + division(dividend - divisor, originalDivisor, originalDivisor, remainder);
+    
+    quotient = add (quotient, division(dividend - divisor, originalDivisor, originalDivisor, remainder));
+    
+    if(signFlag){
+        quotient = twosCompliment(quotient);
+    }
+
+    
+    //Setting flags
+    set_zero(quotient);
+    set_sign(quotient);
+    
+    
+    
+    //Storing result in register
+    return quotient;
+}
+
+
 
 
 //function for load_effective adress function

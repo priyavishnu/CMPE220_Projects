@@ -11,8 +11,8 @@ int MEMORY[65536] = {0};   // Memory
 // General Purpose registers r0-r7
 int     r0 = 0, 
         r1 = 20000,
-        r2 = -1,
-        r3 = -2,
+        r2 = 4,
+        r3 = 2,
         r4 = 1562345, 
         r5 = 0, 
         r6 = 0, 
@@ -782,8 +782,14 @@ void storeInstructionToMemory(char *filename){
     
         char *binary_reg1 = (char*) malloc(10);
         char *binary_reg2 = (char*) malloc(10);
+        char *binary_regrb = (char*) malloc(10);
+        char *binary_regri = (char*) malloc(10);
+        char *binary_regrd = (char*) malloc(10);
+        
+        
     
         int address;
+        
         char code[34] = "";
     
         int mod_result;
@@ -840,6 +846,19 @@ void storeInstructionToMemory(char *filename){
                 {
                     
                     D = atoi(split);
+                    if (D==0)
+                        S=0;
+                    
+                    char *memD = (char*) malloc(17);
+                    strcpy(memD,decToBin(D));
+                    
+                    int len = 9 - strlen(memD);
+                    memmove(memD+len, memD, strlen(memD));
+                    for ( int i = 0; i < len; i++ )
+                        memD[i] = '0';
+
+                    strcat(code, memD);
+                    printf("Register1: %s \n", memD);
                     //printf("inside D variable extract %d\n", D);
                     argNum++;
                     
@@ -903,6 +922,19 @@ void storeInstructionToMemory(char *filename){
                 else if(strcmp(operation,"LEAQ")==0)
                 {
                     Rb = split;
+                    int regb = split[1] - '0';
+                    int binrb = decimalToBinary(regb);
+                    
+                    sprintf(binary_regrb, "%d", binrb);
+                    
+                    
+                    int len = 5 - strlen(binary_regrb);
+                    memmove(binary_regrb+len, binary_regrb, strlen(binary_regrb));
+                    for ( int i = 0; i < len; i++ ){
+                        binary_regrb[i] = '0';
+                    }
+                    strcat(code, binary_regrb);
+                    printf("Register Rb: %s \n", binary_regrb);
                     argNum++;
                     
                 }
@@ -944,6 +976,19 @@ void storeInstructionToMemory(char *filename){
                 if(strcmp(operation,"LEAQ")==0)
                 {
                     Ri = split;
+                    int regi = split[1] - '0';
+                    int binri = decimalToBinary(regi);
+                    
+                    sprintf(binary_regri, "%d", binri);
+                    
+                    
+                    int len = 5 - strlen(binary_regri);
+                    memmove(binary_regri+len, binary_regri, strlen(binary_regri));
+                    for ( int i = 0; i < len; i++ ){
+                        binary_regri[i] = '0';
+                    }
+                    strcat(code, binary_regri);
+                    printf("Register Ri: %s \n", binary_regri);
                     argNum++;
                 }
                 
@@ -955,6 +1000,20 @@ void storeInstructionToMemory(char *filename){
                 {
                     
                     S = atoi(split);
+                    
+                    if (S==0)
+                        S=0;
+                    
+                    char *memS = (char*) malloc(17);
+                    strcpy(memS,decToBin(S));
+                    
+                    int len = 3 - strlen(memS);
+                    memmove(memS+len, memS, strlen(memS));
+                    for ( int i = 0; i < len; i++ )
+                        memS[i] = '0';
+                    
+                    strcat(code, memS);
+                    printf("S: %s \n", memS);
                     //printf("inside S variable extract %d\n",S);
                     argNum++;
                     
@@ -968,6 +1027,19 @@ void storeInstructionToMemory(char *filename){
                 {
                     
                     dest = split;
+                    int regd = split[1] - '0';
+                    int binrd = decimalToBinary(regd);
+                    
+                    sprintf(binary_regrd, "%d", binrd);
+                    
+                    
+                    int len = 5 - strlen(binary_regrd);
+                    memmove(binary_regrd+len, binary_regrd, strlen(binary_regrd));
+                    for ( int i = 0; i < len; i++ ){
+                        binary_regrd[i] = '0';
+                    }
+                    strcat(code, binary_regrd);
+                    printf("Register Rd: %s \n", binary_regrd);
                     argNum++;
                     
                 }
@@ -979,7 +1051,7 @@ void storeInstructionToMemory(char *filename){
         }
         
         
-        
+         printf("Final code of ALU instruction to store in memory is = %s\n", code);
         
         if(strcmp(operation, "STORE")==0)
         {

@@ -567,16 +567,25 @@ int twosCompliment (int num){
 
 
 //Function for subtracting two registers SUB R1, R2 =>  R1 = R1 - R2
-int sub(char* reg1, char* reg2){
+void sub(char* reg1, char* reg2){
 
     int num1 = get_register(reg1);
     int num2 = get_register(reg2);
-    
+
     int n1 = num1, n2 = twosCompliment(num2);
     
-    if(num2 == 0)
-        return num1;
+    if(num2 == 0){
+        printf("Subtraction result: %d \n",num1);
+      //Setting flags
+        set_zero(num1);
+        set_sign(num1);
+        set_carry(n1,n2, num1);
+        set_overflow_sub(n1, n2, num1);
     
+    //Storing result in register
+       set_register(reg2,num1);
+        return;
+    }
     while(num2){
         
         int borrow = (~num1) & num2;
@@ -596,27 +605,46 @@ int sub(char* reg1, char* reg2){
     set_register(reg2,num1);
     
     
-    return num1;
+    printf("Subtraction result: %d \n", num1);
+    return;
     
     
 }
 
 
 //Function for multiplying two registers MUL R1,R2 => R2 = R2 * R1 
-int mul(char* reg1, char* reg2) {
+void  mul(char* reg1, char* reg2) {
 	
     int num1 = get_register(reg1);
     int num2 = get_register(reg2);
     int product = 0;
     
     if (num1 == 0 || num2 == 0){
-	    return 0;
+
+        printf("\n Multiplication result: %d \n", product);
+        set_register(reg2,product);
+      //Setting flags
+        set_zero(product);
+        set_sign(product);
+	return ;
     }	    
     else if (num1 ==1){ 
-	return num2;
+	product = num2;	
+        printf("\n Multiplication result: %d \n", product);
+        set_register(reg2,product);
+      //Setting flags
+        set_zero(product);
+        set_sign(product);
+        return;
     }
     else if (num2 ==1){
-    	return num1;
+	product = num1;	
+        printf("\n Multiplication result: %d \n", product);
+        set_register(reg2,product);
+      //Setting flags
+        set_zero(product);
+        set_sign(product);
+    	return;
     }
     else if (num1 <0 && num2 < 0){
     	num1 = abs(num1);
@@ -637,7 +665,8 @@ int mul(char* reg1, char* reg2) {
     //Storing result in register
     set_register(reg2,product);
     
-    return product;
+    printf("\n Multiplication result: %d \n", product);
+    return ;
 }
 
 //Function for ALU Division. Here (Register1 = Dividend) And (Register2 = Divisor)
@@ -1053,6 +1082,9 @@ void storeInstructionToMemory(char *filename){
         
          printf("Final code of ALU instruction to store in memory is = %s\n", code);
         
+
+	void (*fun_ptr_arr[])(char*,char*) = {sub,mul};
+
         if(strcmp(operation, "STORE")==0)
         {
             execute_store(operation, register1, address);
@@ -1081,15 +1113,18 @@ void storeInstructionToMemory(char *filename){
             int num1 = get_register(register1);
             int num2 = get_register(register2);
             int sum = add(num1,num2);
+            set_register(register2, sum);
             printf("Addition result: %d \n", sum);
         }
         else if(strcmp(operation, "SUB")==0){
-            int difference = sub(register1, register2);
-            printf("Subtraction result: %d \n", difference);
+	    (*fun_ptr_arr[0])(register1, register2);	
+           // int difference = sub(register1, register2);
+           // printf("Subtraction result: %d \n", difference);
         }
         else if(strcmp(operation, "MUL")==0){
-            int product  = mul(register1, register2);
-            printf("\n Multiplication result: %d \n", product);
+	    (*fun_ptr_arr[1])(register1, register2);	
+           // int product  = mul(register1, register2);
+           // printf("\n Multiplication result: %d \n", product);
         }
         else if(strcmp(operation, "LEAQ")==0)
         {

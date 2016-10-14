@@ -6,26 +6,17 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-
-#define INSTRUCTION_MEMORY_BASE    	 10000
-#define BOOT_MEMORY_BASE                     0
-#define MEM_MAX                        	 65535
-#define NUMBER_OF_INSTRUCTIONS              30
-#define STACK_BASE                       15000
-
-// Initialization of all the components 
-
-int MEMORY[MEM_MAX + 1] = {0};   // Memory
+int MEMORY[65536] = {0};   // Memory
 
 // General Purpose registers r0-r7
 int     r0 = 0, 
-        r1 = 0,
-        r2 = 0,
-        r3 = 0,
-        r4 = 0, 
+        r1 = 20000,
+        r2 = 4,
+        r3 = 2,
+        r4 = 1562345, 
         r5 = 0, 
         r6 = 0, 
-        r7 = 0;
+        r7 = 0;	//Lets assume that the registers have some value before the execution began. //r1 = 34
 
 
 int         PC = 40000;            // Program Counter(Initiating the instruction memory[IM] address from MEMORY[10000], i.e. memory address 40000. Needs to be changed for booting OS later)
@@ -36,19 +27,23 @@ int         SP;                    // Stack Pointer
 int         RA;                    // Return Address register
 const int   ZERO = 0;               // Zero Address Register
 
+#define INSTRUCTION_MEMORY_STACK_BASE    10000
+#define BOOT_MEMORY_BASE                     0
+#define STACK_TOP                        65536
+#define NUMBER_OF_INSTRUCTIONS              30
 
 /* Opcodes */
 
 /*	FETCH 	= 00000,
 	STORE 	= 00001,
-	ADD	= 00010,
-	SUB	= 00011,
-	MUL	= 00100
-	DIV	= 00101,
-	MOD	= 00110,
+	ADD		= 00010,
+	SUB		= 00011,
+	MUL		= 00100
+	DIV		= 00101,
+	MOD		= 00110,
 	LEAQ 	= 00111,
 	ADDI    = 01000,
-    	SUBI	= 01001,
+    SUBI	= 01001,
 	MULI	= 01010,
 	DIVI	= 01011,
 	MODI	= 01100,
@@ -160,7 +155,6 @@ void execute_Fetch(char *operation, char *register1, int address){
     int index = address/4;
    
     int i = 0;
-    printf("\n \n ==========================Executing Fetch  Instruction ===================== \n");
     if(strcmp(register1,R0) == 0){                    
         r0 = MEMORY[index];
         MAR = address;
@@ -237,7 +231,6 @@ void execute_store(char *operation, char *register1, int address){
     int i = 0;
     if(strcmp(operation, STORE) == 0)
     {
-	printf("\n \n ==========================Executing Store Instruction ===================== \n");
         if(strcmp(register1,R0) == 0){
             MEMORY[index] = r0;
             MAR = address;
@@ -529,9 +522,6 @@ void call_mod(char *register1, char *register2)
     //Storing result in register
     set_register(register2,rmd);
     
-    printf("\n ******** RESULT ******** \n"); 
-    printf("\n Mod result: %d \n", rmd);
-    
     return;
     
 }
@@ -614,7 +604,7 @@ void sub(char* reg1, char* reg2){
     //Storing result in register
     set_register(reg2,num1);
     
-    printf("\n ******** RESULT ******** \n"); 
+    
     printf("Subtraction result: %d \n", num1);
     return;
     
@@ -675,7 +665,6 @@ void  mul(char* reg1, char* reg2) {
     //Storing result in register
     set_register(reg2,product);
     
-    printf("\n ******** RESULT ******** \n"); 
     printf("\n Multiplication result: %d \n", product);
     return ;
 }
@@ -780,7 +769,6 @@ void call_leaq(int d,char *rb, char *ri,int s,char *dest_reg)
     
     final_addr= d+rb_value+(s*ri_value);
     
-    printf("\n ******** RESULT ******** \n"); 
     printf("Effective address loaded by leaq is : %d", final_addr);
     
     set_register(dest_reg,final_addr);
@@ -877,7 +865,6 @@ void storeInstructionToMemory(char *filename){
                     operation = split;
                 }
                 argNum++;
-		printf("\n \n ************ Now executing Instruction: %s ************* \n", operation);
                 printf("\nOpcode: in string: %s And in binary: %s \n", operation, code);
             }
             
@@ -1122,15 +1109,14 @@ void storeInstructionToMemory(char *filename){
             int divisor = get_register(register2);
             int divisionResult= (*fun_ptr_arr_div[0])(dividend, divisor, divisor, 0);		//Initially we send remainder as '0'.
             set_register(register2, divisionResult);
-            printf("\n ******** RESULT ******** \n"); 
-	    printf("Division Quotient: %d \n", divisionResult);
+            
+            printf("Division Quotient: %d \n", divisionResult);
         }
         else if(strcmp(operation, "ADD")==0){
             int num1 = get_register(register1);
             int num2 = get_register(register2);
 	    int sum = (*fun_ptr_arr_add[0])(num1,num2);;
             set_register(register2, sum);
-            printf("\n ******** RESULT ******** \n"); 
             printf("Addition result: %d \n", sum);
         }
         else if(strcmp(operation, "SUB")==0){
@@ -1146,7 +1132,7 @@ void storeInstructionToMemory(char *filename){
             
         }
         
-        printf("\n\n========================Values after executing instruction : %s ==================\n", operation) ;
+        printf("\n========================Values after executing instruction : %s ================================", operation) ;
         print_values();
         
         lines--;
@@ -1158,15 +1144,12 @@ void storeInstructionToMemory(char *filename){
 }
 void print_values(){
     
-    
-    printf("\n\n========================Values of Special Registers ================================") ;
     printf("\n\nThe PC value is %d\n",PC);
     printf("The FLG value is %d\n", FLG);
     printf("The SP value  is %d\n", SP);
     printf("The RA value  is %d\n\n", RA);
     
-    printf("\n========================Values of General Purpose Registers =========================") ;
-    printf("\n \nThe value in register R0 is %d\n", r0);
+    printf("The value in register R0 is %d\n", r0);
     printf("The value in register R1 is %d\n", r1);
     printf("The value in register R2 is %d\n", r2);
     printf("The value in register R3 is %d\n", r3);
@@ -1180,25 +1163,9 @@ void print_values(){
 }
 
 
-void initialize_code_test() {		
-    
-    MEMORY[20000] = 222;	
-    r0 = 1;
-    r1 = 2;
-    r2 = 3;
-    r3 = 4;
-    r4 = 5; 
-    r5 = 6;
-    r6 = 7; 
-    r7 = 8;
-    FLG = 0;	
-
-}
-
 int main(int argc, char *argv[]){
-    printf("\n========================Initializing registers ==================================") ;
-    initialize_code_test();
-    printf("\n\n========================Initial values before execution =========================") ;
+    MEMORY[20000] = 222;             //LETS ASSUME AT THAT MOMENT MEMORY[20000], i.e. memory address 80000 HAS A VALUE 222 AND TRY TO FETCH IT.
+    printf("\n========================Initial values before execution===========================") ;
     print_values();
     // read_instructions();
     storeInstructionToMemory(argv[1]);
@@ -1206,4 +1173,3 @@ int main(int argc, char *argv[]){
     
     return 0;
 }
-

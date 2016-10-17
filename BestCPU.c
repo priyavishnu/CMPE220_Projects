@@ -495,7 +495,7 @@ void call_mod(char *register1, char *register2)
     
 }
 
-//Function for adding two registers ADD R1, R2 =>  R1 = R1 + R2
+//Function for adding two values
 int add(int num1, int num2){
     
     //Checking if either input is 0
@@ -527,6 +527,19 @@ int add(int num1, int num2){
     
 }
 
+
+//Function for adding two registers ADD R1, R2 =>  R2 = R1 + R2
+void call_add(char* reg1, char* reg2){
+    
+    int num1 = get_register(reg1);
+    int num2 = get_register(reg2);
+    int sum = add(num1,num2);;
+    set_register(reg2, sum);
+    
+    printf("\n ******** RESULT ******** \n");
+    printf("Addition result: %d \n", sum);
+}
+
 //Function to find twos compliment of a number
 int twosCompliment (int num){
     num = ~(num);
@@ -535,7 +548,7 @@ int twosCompliment (int num){
 }
 
 
-//Function for subtracting two registers SUB R1, R2 =>  R1 = R1 - R2
+//Function for subtracting two registers SUB R1, R2 =>  R2 = R1 - R2
 void sub(char* reg1, char* reg2){
 
     int num1 = get_register(reg1);
@@ -1119,7 +1132,7 @@ void storeInstructionToMemory(char *filename){
         
 	//Using Function pointers for ALU operations. Since div and add use different function parameters, have used different function pointers for them
 	
-	void (*fun_ptr_arr[])(char*,char*) = {call_mod,sub,mul};
+	void (*fun_ptr_arr[])(char*,char*) = {call_mod,sub,mul,call_add};
 	int (*fun_ptr_arr_div[])(int,int,int,int) = {division};
 	int (*fun_ptr_arr_add[])(int,int) = {add};
         
@@ -1138,6 +1151,7 @@ void storeInstructionToMemory(char *filename){
            // call_mod(register1, register2);
             
         }
+        
         else if (strcmp(operation, "DIV")==0)
         {
             int dividend = get_register(register1);
@@ -1147,36 +1161,32 @@ void storeInstructionToMemory(char *filename){
             printf("\n ******** RESULT ******** \n"); 
 	    printf("Division Quotient: %d \n", divisionResult);
         }
+        
         else if(strcmp(operation, "ADD")==0){
-            int num1 = get_register(register1);
-            int num2 = get_register(register2);
-	    int sum = (*fun_ptr_arr_add[0])(num1,num2);;
-            set_register(register2, sum);
-            printf("\n ******** RESULT ******** \n"); 
-            printf("Addition result: %d \n", sum);
+            (*fun_ptr_arr[3])(register1, register2);
         }
+        
         else if(strcmp(operation, "SUB")==0){
 	    (*fun_ptr_arr[1])(register1, register2);	
         }
+        
         else if(strcmp(operation, "MUL")==0){
 	    (*fun_ptr_arr[2])(register1, register2);	
         }
+        
         else if(strcmp(operation, "LEAQ")==0)
         {
-            
             call_leaq(D,Rb,Ri,S,dest);
-            
         }
+        
         else if(strcmp(operation, "CMPQ")==0)
         {
             call_cmpq(register1, register2);
-            
         }
+        
         else if(strcmp(operation, "TEST")==0)
         {
-            
             call_test(register1, register2);
-            
         }
         
         printf("\n\n========================Values after executing instruction : %s ==================\n", operation) ;

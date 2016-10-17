@@ -598,7 +598,7 @@ void  mul(char* reg1, char* reg2) {
 	return ;
     }	    
     else if (num1 ==1){ 
-	product = num2;	
+        product = num2;
         printf("\n Multiplication result: %d \n", product);
         set_register(reg2,product);
       //Setting flags
@@ -748,6 +748,59 @@ void call_leaq(int d,char *rb, char *ri,int s,char *dest_reg)
     
 }
 
+
+//function call for test instruction whihc will be set flag depend upon test operation.and will not chnage any register value.
+void call_test(char *reg1, char *reg2)
+{
+    int num1 = get_register(reg1);
+    int num2 = get_register(reg2);
+    
+    int result = 0;
+    
+    if (num1 == 0 || num2 == 0)
+    {
+        result=0;
+    }
+    else if (num1 ==1)
+    {
+        result = num2;
+    }
+    else if (num2 ==1)
+    {
+        result = num1;
+    }
+    else
+    {
+        result= num1 & num2;
+    }
+    
+    //Setting flags
+    set_zero(result);
+    set_sign(result);
+
+    return;
+}
+
+//function call for cmpq instruction whihc will be set flag depend upon test operation.and will not chnage any register value.
+void call_cmpq(char *reg1, char *reg2)
+{
+    int num1 = get_register(reg1);
+    int num2 = get_register(reg2);
+    
+    int result = 0;
+    
+    if (num1 == 0 || num2 == 0)
+    {
+        result=0;
+    }
+    
+    //Setting flags
+    set_zero(result);
+    set_sign(result);
+    
+    return;
+}
+
 //Function for storing the instruction to the memory
 void storeInstructionToMemory(char *filename){
     
@@ -833,6 +886,14 @@ void storeInstructionToMemory(char *filename){
                 }
                 else if(strcmp(split, "LEAQ")==0){
                     strcat(code, "00111");
+                    operation = split;
+                }
+                else if(strcmp(split, "CMPQ")==0){
+                    strcat(code, "01000");
+                    operation = split;
+                }
+                else if(strcmp(split, "TEST")==0){
+                    strcat(code, "01001");
                     operation = split;
                 }
                 argNum++;
@@ -944,7 +1005,9 @@ void storeInstructionToMemory(char *filename){
                         strcmp(operation,"SUB")==0 ||
                         strcmp(operation,"DIV")==0 ||
                         strcmp(operation,"MUL")==0 ||
-                        strcmp(operation,"MOD")==0)
+                        strcmp(operation,"MOD")==0 ||
+                        strcmp(operation,"CMPQ")==0 ||
+                        strcmp(operation,"TEST")==0 )
                 {
                     //register 2
                     register2 = split;
@@ -1104,6 +1167,17 @@ void storeInstructionToMemory(char *filename){
             call_leaq(D,Rb,Ri,S,dest);
             
         }
+        else if(strcmp(operation, "CMPQ")==0)
+        {
+            call_cmpq(register1, register2);
+            
+        }
+        else if(strcmp(operation, "TEST")==0)
+        {
+            
+            call_test(register1, register2);
+            
+        }
         
         printf("\n\n========================Values after executing instruction : %s ==================\n", operation) ;
         print_values();
@@ -1143,8 +1217,8 @@ void initialize_code_test() {
     
     MEMORY[20000] = 222;	
     r0 = 1;
-    r1 = 55;
-    r2 = 3;
+    r1 = 4;
+    r2 = 20;
     r3 = 4;
     r4 = 5; 
     r5 = 6;

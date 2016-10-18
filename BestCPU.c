@@ -1177,98 +1177,39 @@ void storeInstructionToMemory(char *filename){
     int divisor;
     int divisionResult;
 
-    if(strcmp(operation, "LEAQ")==0){
-        call_leaq(D,Rb,Ri,S,dest);
+    switch(opCodeInt){
+        case 0: execute_Fetch(operation, register1, address);
+                break;
+        case 1: execute_store(operation, register1, address);
+                break;
+        case 2: (*fun_ptr_arr[3])(register1, register2);
+                break;
+        case 3: (*fun_ptr_arr[1])(register1, register2);
+                break;
+        case 4: (*fun_ptr_arr[2])(register1, register2);    
+                break;
+        case 5: dividend = get_register(register1);
+                divisor = get_register(register2);
+                divisionResult= (*fun_ptr_arr_div[0])(dividend, divisor, divisor, 0);       //Initially we send remainder as '0'.
+                set_register(register2, divisionResult);
+                printf("\n ******** RESULT ******** \n"); 
+                printf("Division Quotient: %d \n", divisionResult);
+                break;
+        case 6: (*fun_ptr_arr[0])(register1, register2);
+                break;
+        case 7: call_leaq(D,Rb,Ri,S,dest);
+                break;
+        case 8: call_cmpq(register1, register2);
+                break;
+        case 9: call_test(register1, register2);
+                break;
+        default: printf("UNEXPECTED OPCODE, PLEASE CHECK IF YOU ADDED THE OPERATION INTO THE INSTRUCTION SET ARCHITECTURE!");
     }
-    
-    else{
-        switch(opCodeInt){
-            case 0: execute_Fetch(operation, register1, address);
-                    break;
-            case 1: execute_store(operation, register1, address);
-                    break;
-            case 2: (*fun_ptr_arr[3])(register1, register2);
-                    break;
-            case 3: (*fun_ptr_arr[1])(register1, register2);
-                    break;
-            case 4: (*fun_ptr_arr[2])(register1, register2);    
-                    break;
-            case 5: dividend = get_register(register1);
-                    divisor = get_register(register2);
-                    divisionResult= (*fun_ptr_arr_div[0])(dividend, divisor, divisor, 0);       //Initially we send remainder as '0'.
-                    set_register(register2, divisionResult);
-                    printf("\n ******** RESULT ******** \n"); 
-                    printf("Division Quotient: %d \n", divisionResult);
-                    break;
-            case 6: (*fun_ptr_arr[0])(register1, register2);
-                    break;
-            case 8: call_cmpq(register1, register2);
-                    break;
-            case 9: call_test(register1, register2);
-                    break;
-            default: printf("UNEXPECTED OPCODE, PLEASE CHECK IF YOU ADDED THE OPERATION INTO THE INSTRUCTION SET ARCHITECTURE!");
-        }
+    printf("\n\n========================Values after executing instruction : %s ==================\n", operation) ;
+    print_values();
+    PC += 4;    
+    lines--;
     }
-
-       /* if(strcmp(operation, "STORE")==0)
-        {
-            execute_store(operation, register1, address);
-        }
-        else if (strcmp(operation, "FETCH")==0)
-        {
-            execute_Fetch(operation, register1, address);
-        }
-        else if (strcmp(operation, "MOD")==0)
-        {
-            
-	    (*fun_ptr_arr[0])(register1, register2);	
-           // call_mod(register1, register2);
-            
-        }
-        
-        else if (strcmp(operation, "DIV")==0)
-        {
-            int dividend = get_register(register1);
-            int divisor = get_register(register2);
-            int divisionResult= (*fun_ptr_arr_div[0])(dividend, divisor, divisor, 0);		//Initially we send remainder as '0'.
-            set_register(register2, divisionResult);
-            printf("\n ******** RESULT ******** \n"); 
-            printf("Division Quotient: %d \n", divisionResult);
-        }
-        
-        else if(strcmp(operation, "ADD")==0){
-            (*fun_ptr_arr[3])(register1, register2);
-        }
-        
-        else if(strcmp(operation, "SUB")==0){
-	    (*fun_ptr_arr[1])(register1, register2);	
-        }
-        
-        else if(strcmp(operation, "MUL")==0){
-	    (*fun_ptr_arr[2])(register1, register2);	
-        }
-        
-        else if(strcmp(operation, "LEAQ")==0)
-        {
-            call_leaq(D,Rb,Ri,S,dest);
-        }
-        
-        else if(strcmp(operation, "CMPQ")==0)
-        {
-            call_cmpq(register1, register2);
-        }
-        
-        else if(strcmp(operation, "TEST")==0)
-        {
-            call_test(register1, register2);
-        }*/
-        
-        printf("\n\n========================Values after executing instruction : %s ==================\n", operation) ;
-        print_values();
-        
-        lines--;
-    }
-    PC += 4;
     fclose(instructions_file);
     return;
     

@@ -41,17 +41,17 @@ const int   ZERO = 0;               // Zero Address Register
 
 /*	FETCH 	= 00000,
 	STORE 	= 00001,
-	ADD	= 00010,
-	SUB	= 00011,
-	MUL	= 00100
-	DIV	= 00101,
-	MOD	= 00110,
+	ADD	    = 00010,
+	SUB	    = 00011,
+	MUL	    = 00100
+	DIV	    = 00101,
+	MOD	    = 00110,
 	LEAQ 	= 00111,
-	ADDI    = 01000,
-    	SUBI	= 01001,
-	MULI	= 01010,
-	DIVI	= 01011,
-	MODI	= 01100,
+	CMPQ    = 01000,
+    TEST	= 01001,
+        	= 01010,
+	       	= 01011,
+	       	= 01100,
             = 01101,     // For Future Instructions
             = 01110,
             = 01111     */
@@ -857,7 +857,8 @@ void storeInstructionToMemory(char *filename){
         int address;
         
         char code[34] = "";
-    
+        int instruction;
+
         int mod_result;
     
         int argNum = 0;
@@ -935,6 +936,8 @@ void storeInstructionToMemory(char *filename){
                     strcat(code, memD);
                     printf("Register1: %s \n", memD);
                     //printf("inside D variable extract %d\n", D);
+                    instruction = strtol(code,NULL,2);
+                    MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
                     argNum++;
                     
                 }
@@ -955,6 +958,7 @@ void storeInstructionToMemory(char *filename){
                     }
                     strcat(code, binary_reg1);
                     printf("Register1: %s \n", binary_reg1);
+
                     argNum++;
                 }
             }
@@ -981,16 +985,13 @@ void storeInstructionToMemory(char *filename){
                     printf("Memory Address:%s\n", memAddr);
                     strcat(code, memAddr);
                     printf("\nCode to store in memory in binary: %s \n", code);
-                    int instruction = strtol(code,NULL,2);
                     
+                    instruction = strtol(code,NULL,2);
                     MEMORY[PC/4] = instruction ; // Store the instruction in Memory starting from the IM start address
                     printf("Final code to store in memory in int: %d\n", instruction);
                     printf("instruction code is = %d and memory location at which it is stored is = %d\n", instruction, PC/4);
                     printf("Memory[PC/4] = %d\n", MEMORY[PC/4]);
                     
-                    char* instructionBinary = decimal_to_binary(instruction, 32);
-                    
-                    PC += 4 ;
                     argNum++;
                     
                 }
@@ -1010,6 +1011,10 @@ void storeInstructionToMemory(char *filename){
                     }
                     strcat(code, binary_regrb);
                     printf("Register Rb: %s \n", binary_regrb);
+
+                    instruction = strtol(code,NULL,2);
+                    MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
+
                     argNum++;
                     
                 }
@@ -1037,12 +1042,11 @@ void storeInstructionToMemory(char *filename){
                     strcat(code, binary_reg2);
                     printf("Register2: %s \n", binary_reg2);
                     strcat(code, "00000000000000000");         //UNUSED ADDRESS PART IN THE INSTRUCTION
-                    int instruction = strtol(code,NULL,2);
+                    instruction = strtol(code,NULL,2);
                     MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
                     printf("Final code of ALU instruction to store in memory is = %s\n", code);
                     printf("Storing at address = %d\n",PC/4);
                     printf("INSTRUCTION IS = %d\n", instruction);
-                    PC += 4;
                     
                     argNum++;
                 }
@@ -1066,6 +1070,10 @@ void storeInstructionToMemory(char *filename){
                     }
                     strcat(code, binary_regri);
                     printf("Register Ri: %s \n", binary_regri);
+
+                    instruction = strtol(code,NULL,2);
+                    MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
+
                     argNum++;
                 }
                 
@@ -1092,6 +1100,14 @@ void storeInstructionToMemory(char *filename){
                     strcat(code, memS);
                     printf("S: %s \n", memS);
                     //printf("inside S variable extract %d\n",S);
+                    
+                    instruction = strtol(code,NULL,2);
+                    MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
+                    if((argNum ==5)){
+                        printf("Final code of ALU instruction to store in memory is = %s\n", code);
+                        printf("Storing at address = %d\n",PC/4);
+                        printf("INSTRUCTION IS = %d\n", instruction);
+                    }
                     argNum++;
                     
                 }
@@ -1117,6 +1133,13 @@ void storeInstructionToMemory(char *filename){
                     }
                     strcat(code, binary_regrd);
                     printf("Register Rd: %s \n", binary_regrd);
+
+                    instruction = strtol(code,NULL,2);
+                    MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
+                    printf("Final code of ALU instruction to store in memory is = %s\n", code);
+                    printf("Storing at address = %d\n",PC/4);
+                    printf("INSTRUCTION IS = %d\n", instruction);
+
                     argNum++;
                     
                 }
@@ -1127,16 +1150,67 @@ void storeInstructionToMemory(char *filename){
             
         }
         
+/*------------------------------FETCHING INSTRUCTION FROM MEMORY-----------------------------------------------*/
+        char* instrucitonBinaryToExecute = decimal_to_binary(MEMORY[PC/4], 32);
+        printf("***---Reading Instruction From Memory---***\n");
+        printf("Binary Instruction Fetched From Memory Pointed By PC = %s\n", instrucitonBinaryToExecute);
         
-        printf("Final code of ALU instruction to store in memory is = %s\n", code);
+        int i;
+        char opCodeBinary[4];
+
+        for(i = 0; i < 5; i++){
+            opCodeBinary[i] = instrucitonBinaryToExecute[i];
+        }
+        int opCodeInt = strtol(opCodeBinary,NULL,2);
+        printf("OP Code of the instruction is = %s\n", opCodeBinary);
+        printf("OP code in decimal is = %d\n", opCodeInt);
+
+
         
 	//Using Function pointers for ALU operations. Since div and add use different function parameters, have used different function pointers for them
 	
 	void (*fun_ptr_arr[])(char*,char*) = {call_mod,sub,mul,call_add};
 	int (*fun_ptr_arr_div[])(int,int,int,int) = {division};
 	int (*fun_ptr_arr_add[])(int,int) = {add};
-        
-        if(strcmp(operation, "STORE")==0)
+
+    int dividend;
+    int divisor;
+    int divisionResult;
+
+    if(strcmp(operation, "LEAQ")==0){
+        call_leaq(D,Rb,Ri,S,dest);
+    }
+    
+    else{
+        switch(opCodeInt){
+            case 0: execute_Fetch(operation, register1, address);
+                    break;
+            case 1: execute_store(operation, register1, address);
+                    break;
+            case 2: (*fun_ptr_arr[3])(register1, register2);
+                    break;
+            case 3: (*fun_ptr_arr[1])(register1, register2);
+                    break;
+            case 4: (*fun_ptr_arr[2])(register1, register2);    
+                    break;
+            case 5: dividend = get_register(register1);
+                    divisor = get_register(register2);
+                    divisionResult= (*fun_ptr_arr_div[0])(dividend, divisor, divisor, 0);       //Initially we send remainder as '0'.
+                    set_register(register2, divisionResult);
+                    printf("\n ******** RESULT ******** \n"); 
+                    printf("Division Quotient: %d \n", divisionResult);
+                    break;
+            case 6: (*fun_ptr_arr[0])(register1, register2);
+                    break;
+            case 8: call_cmpq(register1, register2);
+                    break;
+            case 9: call_test(register1, register2);
+                    break;
+            default: printf("UNEXPECTED OPCODE, PLEASE CHECK IF YOU ADDED THE OPERATION INTO THE INSTRUCTION SET ARCHITECTURE!");
+        }
+    }
+
+       /* if(strcmp(operation, "STORE")==0)
         {
             execute_store(operation, register1, address);
         }
@@ -1147,7 +1221,7 @@ void storeInstructionToMemory(char *filename){
         else if (strcmp(operation, "MOD")==0)
         {
             
-	    (*fun_ptr_arr[1])(register1, register2);	
+	    (*fun_ptr_arr[0])(register1, register2);	
            // call_mod(register1, register2);
             
         }
@@ -1159,7 +1233,7 @@ void storeInstructionToMemory(char *filename){
             int divisionResult= (*fun_ptr_arr_div[0])(dividend, divisor, divisor, 0);		//Initially we send remainder as '0'.
             set_register(register2, divisionResult);
             printf("\n ******** RESULT ******** \n"); 
-	    printf("Division Quotient: %d \n", divisionResult);
+            printf("Division Quotient: %d \n", divisionResult);
         }
         
         else if(strcmp(operation, "ADD")==0){
@@ -1187,14 +1261,14 @@ void storeInstructionToMemory(char *filename){
         else if(strcmp(operation, "TEST")==0)
         {
             call_test(register1, register2);
-        }
+        }*/
         
         printf("\n\n========================Values after executing instruction : %s ==================\n", operation) ;
         print_values();
         
         lines--;
     }
-    
+    PC += 4;
     fclose(instructions_file);
     return;
     

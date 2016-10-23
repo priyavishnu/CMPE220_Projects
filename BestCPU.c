@@ -1103,7 +1103,7 @@ void storeInstructionToMemory(char *filename){
                     
                     instruction = strtol(code,NULL,2);
                     MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
-                    if((argNum ==5)){
+                    if(!(argNum ==5)){
                         printf("Final code of ALU instruction to store in memory is = %s\n", code);
                         printf("Storing at address = %d\n",PC/4);
                         printf("INSTRUCTION IS = %d\n", instruction);
@@ -1156,7 +1156,7 @@ void storeInstructionToMemory(char *filename){
         printf("Binary Instruction Fetched From Memory Pointed By PC = %s\n", instrucitonBinaryToExecute);
         
         int i;
-        char opCodeBinary[4];
+        char opCodeBinary[5];
 
         for(i = 0; i < 5; i++){
             opCodeBinary[i] = instrucitonBinaryToExecute[i];

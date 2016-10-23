@@ -927,10 +927,10 @@ void storeInstructionToMemory(char *filename){
                     
                     char *memD = (char*) malloc(17);
                     strcpy(memD,decToBin(D));
-                    
+                    int i = 0;
                     int len = 9 - strlen(memD);
                     memmove(memD+len, memD, strlen(memD));
-                    for ( int i = 0; i < len; i++ )
+                    for (i = 0; i < len; i++ )
                         memD[i] = '0';
 
                     strcat(code, memD);
@@ -950,10 +950,10 @@ void storeInstructionToMemory(char *filename){
                     
                     sprintf(binary_reg1, "%d", bin1);
                     
-                    
+                    int i = 0;
                     int len = 5 - strlen(binary_reg1);
                     memmove(binary_reg1+len, binary_reg1, strlen(binary_reg1));
-                    for ( int i = 0; i < len; i++ ){
+                    for (i = 0; i < len; i++ ){
                         binary_reg1[i] = '0';
                     }
                     strcat(code, binary_reg1);
@@ -974,10 +974,10 @@ void storeInstructionToMemory(char *filename){
                     address = addr;
                     char *memAddr = (char*) malloc(17);
                     strcpy(memAddr,decToBin(addr));
-                    
+                    int i = 0;
                     int len = 17 - strlen(memAddr);
                     memmove(memAddr+len, memAddr, strlen(memAddr));
-                    for ( int i = 0; i < len; i++ )
+                    for (i = 0; i < len; i++ )
                         memAddr[i] = '0';
                     
                     //unused register 2 value
@@ -1003,10 +1003,10 @@ void storeInstructionToMemory(char *filename){
                     
                     sprintf(binary_regrb, "%d", binrb);
                     
-                    
+                    int i = 0;
                     int len = 5 - strlen(binary_regrb);
                     memmove(binary_regrb+len, binary_regrb, strlen(binary_regrb));
-                    for ( int i = 0; i < len; i++ ){
+                    for (i = 0; i < len; i++ ){
                         binary_regrb[i] = '0';
                     }
                     strcat(code, binary_regrb);
@@ -1033,10 +1033,10 @@ void storeInstructionToMemory(char *filename){
                     int bin2 = decimalToBinary(reg2);
                     sprintf(binary_reg2, "%d", bin2);
                     
-                    
+                    int i = 0;
                     int len = 5 - strlen(binary_reg2);
                     memmove(binary_reg2+len, binary_reg2, strlen(binary_reg2));
-                    for ( int i = 0; i < len; i++ ){
+                    for (i = 0; i < len; i++ ){
                         binary_reg2[i] = '0';
                     }
                     strcat(code, binary_reg2);
@@ -1062,10 +1062,10 @@ void storeInstructionToMemory(char *filename){
                     
                     sprintf(binary_regri, "%d", binri);
                     
-                    
+                    int i = 0;
                     int len = 5 - strlen(binary_regri);
                     memmove(binary_regri+len, binary_regri, strlen(binary_regri));
-                    for ( int i = 0; i < len; i++ ){
+                    for (i = 0; i < len; i++ ){
                         binary_regri[i] = '0';
                     }
                     strcat(code, binary_regri);
@@ -1091,10 +1091,10 @@ void storeInstructionToMemory(char *filename){
                     
                     char *memS = (char*) malloc(17);
                     strcpy(memS,decToBin(S));
-                    
+                    int i = 0;
                     int len = 3 - strlen(memS);
                     memmove(memS+len, memS, strlen(memS));
-                    for ( int i = 0; i < len; i++ )
+                    for (i = 0; i < len; i++ )
                         memS[i] = '0';
                     
                     strcat(code, memS);
@@ -1125,10 +1125,10 @@ void storeInstructionToMemory(char *filename){
                     
                     sprintf(binary_regrd, "%d", binrd);
                     
-                    
+                    int i = 0;
                     int len = 5 - strlen(binary_regrd);
                     memmove(binary_regrd+len, binary_regrd, strlen(binary_regrd));
-                    for ( int i = 0; i < len; i++ ){
+                    for (i = 0; i < len; i++ ){
                         binary_regrd[i] = '0';
                     }
                     strcat(code, binary_regrd);

@@ -838,6 +838,31 @@ void call_cmpq(char *reg1, char *reg2)
 }
 
 
+//function call for sete instruction which will set register based on zero flag. (equal)
+void call_sete(char *reg1)
+{
+    int num = get_register(reg1);
+    
+
+    char *numD = (char*) malloc(5);
+    strcpy(numD,decToBin(num));
+    
+    if (numD[0]=='1')
+    {
+        num=1;
+        
+    }
+    else
+    {
+        num=0;
+    }
+    
+    set_register(reg1,num);
+    
+    return;
+}
+
+
 // Function to save the label names in an array with index equal to the line number
 void set_label_line_number(char *inst,int lines){
     
@@ -997,6 +1022,19 @@ void storeInstructionToMemory(char *filename){
                     strcat(code, "01010");
                     operation = split;
                 }
+                else if(strcmp(split, "SETE")==0){
+                    strcat(code, "01011");
+                    operation = split;
+                }else if(strcmp(split, "SETNE")==0){
+                    strcat(code, "01100");
+                    operation = split;
+                }else if(strcmp(split, "SETS")==0){
+                    strcat(code, "01101");
+                    operation = split;
+                }else if(strcmp(split, "SETNS")==0){
+                    strcat(code, "01110");
+                    operation = split;
+                }
                 argNum++;
                 printf("\n \n ************ Now executing Instruction: %s ************* \n", operation);
                 printf("\nOpcode: in string: %s And in binary: %s \n", operation, code);
@@ -1066,6 +1104,19 @@ void storeInstructionToMemory(char *filename){
                     printf("Register1: %s \n", binary_reg1);
 
                     argNum++;
+                    
+                    if (strcmp(operation,"SETE")==0 ||
+                        strcmp(operation,"SETNE")==0 ||
+                        strcmp(operation,"SETS")==0 ||
+                        strcmp(operation,"SETNS")==0
+                        )
+                        {strcat(code, "0000000000000000000000");         //UNUSED ADDRESS PART IN THE INSTRUCTION
+                        instruction = strtol(code,NULL,2);
+                        MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
+                        printf("Final code of ALU instruction to store in memory is = %s\n", code);
+                        printf("Storing at address = %d\n",PC/4);
+                        printf("INSTRUCTION IS = %d\n", instruction);
+                        }
                 }
             }
             

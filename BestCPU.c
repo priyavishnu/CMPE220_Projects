@@ -800,22 +800,39 @@ void call_test(char *reg1, char *reg2)
     return;
 }
 
-//function call for cmpq instruction whihc will be set flag depend upon test operation.and will not chnage any register value.
+//function call for cmpq instruction whihc will be set flag depend upon test operation.and will not chnage any register value. CMPQ R1, R2 = R2-R1
 void call_cmpq(char *reg1, char *reg2)
 {
-    int num1 = get_register(reg1);
-    int num2 = get_register(reg2);
+    int num1 = get_register(reg2);
+    int num2 = get_register(reg1);
     
-    int result = 0;
+    int n1 = num1, n2 = twosCompliment(num2);
     
-    if (num1 == 0 || num2 == 0)
-    {
-        result=0;
+   
+    if(num2 == 0){
+        
+        //Setting flags
+        set_zero(num1);
+        set_sign(num1);
+        set_carry(n1,n2, num1);
+        set_overflow_sub(n1, n2, num1);
+
+        return;
+    }
+    while(num2){
+        
+        int borrow = (~num1) & num2;
+        num1 = num1 ^ num2;
+        
+        
+        num2 = borrow<<1;
     }
     
     //Setting flags
-    set_zero(result);
-    set_sign(result);
+    set_zero(num1);
+    set_sign(num1);
+    set_carry(n1,n2, num1);
+    set_overflow_sub(n1, n2, num1);
     
     return;
 }
@@ -1336,7 +1353,7 @@ void initialize_code_test() {
     r1 = 4;
     r2 = 20;
     r3 = 4;
-    r4 = 5; 
+    r4 = 3;
     r5 = 6;
     r6 = 7; 
     r7 = 8;

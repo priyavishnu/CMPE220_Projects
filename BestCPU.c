@@ -12,6 +12,7 @@
 #define MEM_MAX                        	 65535
 #define NUMBER_OF_INSTRUCTIONS              30
 #define STACK_BASE                       15000
+#define LABEL_MAX                          100
 
 // Initialization of all the components 
 
@@ -35,6 +36,11 @@ int         FLG;                   // Flag register
 int         SP;                    // Stack Pointer
 int         RA;                    // Return Address register
 const int   ZERO = 0;               // Zero Address Register
+
+
+// An array to store the Label names with thier index equal to the line number
+char labels[LABEL_MAX][20] = {0};
+
 
 
 /* Opcodes */
@@ -814,13 +820,53 @@ void call_cmpq(char *reg1, char *reg2)
     return;
 }
 
+
+// Function to save the label names in an array with index equal to the line number
+void set_label_line_number(char *inst,int lines){
+    
+    char *label;
+    char temp[100];
+    memset(temp, '\0', sizeof(temp));
+    strcpy(temp, inst);
+    label = strtok(temp, ":");
+    strcpy(labels[lines], label);
+    
+    printf("\n The substring is: %s\n", labels[lines]);
+    printf("The line value is: %d\n", lines);
+}
+
+//Function that returns the line number matching the label name.
+int get_line(char *label){
+    
+    printf("The input label is: %s\n", label);
+    int i,v;
+    
+    for (i=0; i < LABEL_MAX ; i++){
+        
+        if (labels[i] != NULL){
+            printf("The saved labels is: %s\n", labels[i]);
+            printf("The i value is: %d\n", i);
+            v = strcmp(labels[i],label);
+            if(v == 0)
+                return i;
+        }
+    }
+    
+    printf("\n Invalid label name \n");
+    return -1;
+    
+}
+
+
 //Function for storing the instruction to the memory
 void storeInstructionToMemory(char *filename){
     
     char inst[NUMBER_OF_INSTRUCTIONS];
     int lines = 0;
+    char *label_string;
     char *split = (char *) malloc(16);
     char * str = (char *) malloc(16);
+    
     
     FILE *instructions_file;
     
@@ -831,9 +877,14 @@ void storeInstructionToMemory(char *filename){
     }
     
     while (fgets(inst,NUMBER_OF_INSTRUCTIONS,instructions_file) != NULL){
+        label_string = strstr(inst, ":");
+        if (label_string != NULL){
+            set_label_line_number(inst,lines);
+        }
         lines++;
     }
-    
+
+
     instructions_file = fopen(filename,"r");
     
     while (lines != 0){
@@ -860,12 +911,27 @@ void storeInstructionToMemory(char *filename){
         int instruction;
 
         int mod_result;
+        
+        label_string = strstr(inst, ":");
+        
+        if (label_string == NULL){
+            
+            strcpy(str,inst);
+            split = strtok(str, " ,.-()");
+        
+        }
+        
+        else if (label_string != NULL){
+            
+            strtok(inst, ":");
+            split = strtok(NULL," ");
+            printf("The parsed label is: %s\n", split);
+        }
     
         int argNum = 0;
 
         
-        strcpy(str,inst);
-        split = strtok(str, " ,.-()");
+
         while(split != NULL)
         {
             if(argNum == 0)
@@ -910,15 +976,38 @@ void storeInstructionToMemory(char *filename){
                     strcat(code, "01001");
                     operation = split;
                 }
+                else if(strcmp(split, "JUMP")==0){
+                    strcat(code, "01010");
+                    operation = split;
+                }
                 argNum++;
-		printf("\n \n ************ Now executing Instruction: %s ************* \n", operation);
+                printf("\n \n ************ Now executing Instruction: %s ************* \n", operation);
                 printf("\nOpcode: in string: %s And in binary: %s \n", operation, code);
             }
             
             else if(argNum == 1)
             {
+                if(strcmp(operation,"JUMP")==0)
+                {
+                    int line_no;
+                    label_string = split;
+                    printf("The parsed label is: %s\n", label_string);
+                    line_no = get_line(label_string);
+                    printf("The line no obtained is: %d\n", line_no);
+                    char* address_offset = decimal_to_binary(line_no, 27);
+                    printf("Binary address offset to jump = %s\n", address_offset);
+                    
+                    strcat(code, address_offset);
+                    printf("Binary code for jump = %s\n", code);
+                    instruction = strtol(code,NULL,2);
+                    printf("Binary instruction for jump = %d\n", instruction);
+                    MEMORY[PC/4] = instruction;             //INSTRUCTION STORED IN THE MEMORY
+                    argNum++;
                 
-                if(strcmp(operation,"LEAQ")==0)
+                }
+                
+                
+                else if(strcmp(operation,"LEAQ")==0)
                 {
                     
                     D = atoi(split);
@@ -1202,6 +1291,8 @@ void storeInstructionToMemory(char *filename){
         case 8: call_cmpq(register1, register2);
                 break;
         case 9: call_test(register1, register2);
+                break;
+        case 10: printf("\n Jump to be implemented after Tarshith's integration\n");
                 break;
         default: printf("UNEXPECTED OPCODE, PLEASE CHECK IF YOU ADDED THE OPERATION INTO THE INSTRUCTION SET ARCHITECTURE!");
     }

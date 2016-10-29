@@ -1,0 +1,4 @@
+Loop: ADD R3,R1,R2
+JUMP Loop
+JUMP Exit
+Exit: MUL R1,R2,R3

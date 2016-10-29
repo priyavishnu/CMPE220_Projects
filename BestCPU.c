@@ -232,6 +232,33 @@ void set_register (char *reg,int val)
     return;
 }
 
+//Function that accepts binary register value into text. EX: 00001 to R1------------------TARSHITH
+char *register_binary_to_char(char *reg_in_binary){
+    char *register_in_char;
+    int register_in_int = strtol(reg_in_binary,NULL,2);
+    switch(register_in_int){
+        case 0: register_in_char = "R0";
+                break;
+        case 1: register_in_char = "R1";
+                break;
+        case 2: register_in_char = "R2";
+                break;
+        case 3: register_in_char = "R3";
+                break;
+        case 4: register_in_char = "R4";
+                break;
+        case 5: register_in_char = "R5";
+                break;
+        case 6: register_in_char = "R6";
+                break;
+        case 7: register_in_char = "R7";
+                break;
+        default: printf("UNLNOWN REGISTER VALUE\n");
+    }
+    return register_in_char;
+}
+
+
 //Function to fetch the value from specified memeory location to register
 void execute_Fetch(char *operation, char *reg, int address){
     char *FETCH = "FETCH";
@@ -750,7 +777,8 @@ int division(int dividend, int divisor, int originalDivisor, int remainder)
 
 void call_leaq(int d,char *rb, char *ri,int s,char *dest_reg)
 {
-
+    printf("D = %d, S = %d\n", d, s);
+    printf("ri = %s, rb = %s, dest_reg = %s\n", ri, rb, dest_reg);
     int final_addr=0;
     
     int rb_value = get_register(rb);
@@ -897,6 +925,158 @@ int get_line(char *label){
     printf("\n Invalid label name \n");
     return -1;
     
+}
+
+
+int executeInstruction(int PC, char *operation_to_display){
+    char* instrucitonBinaryToExecute = decimal_to_binary(MEMORY[PC/4], 32);
+        printf("***---Reading Instruction From Memory---***\n");
+        printf("Binary Instruction Fetched From Memory Pointed By PC = %s\n", instrucitonBinaryToExecute);
+        
+        char opCodeBinary[5];
+        char register1_in_binary[5];
+        char register2_in_binary[5];
+        char memAddress[16];
+
+        int address;
+        int S=0,D=0;
+        int i;
+        
+        char Rb_in_char[5];
+        char Ri_in_char[5];
+        char dest_in_char[5];
+        char S_in_char[3];
+        char D_in_char[9];
+
+        char *Ri;
+        char *Rb;
+        char *dest;
+        char *operation;
+        char *register1;
+        char *register2;
+
+        for(i = 0; i < 5; i++){
+            opCodeBinary[i] = instrucitonBinaryToExecute[i];
+        }
+        int opCodeInt = strtol(opCodeBinary,NULL,2);
+
+        printf("OP Code of the instruction is = %s\n", opCodeBinary);
+        printf("OP code in decimal is = %d\n", opCodeInt);
+
+        if(opCodeInt == 0 || opCodeInt == 1){
+            if(opCodeInt == 0){                                                 //Building Operation for STORE and FETCH functions
+                operation = "FETCH";    
+            }
+            else if(opCodeInt == 1){
+                operation = "STORE";
+            }
+            for(i = 5; i < 10; i++){  
+                register1_in_binary[i-5] = instrucitonBinaryToExecute[i];       //Building Register1 out of the instruction
+            }
+            for(i = 16; i < 32; i++){     
+                memAddress[i-16] = instrucitonBinaryToExecute[i];               //Building Address out of the instruction
+            }
+
+            //getting the paramenters ready to send to the FETCH and STORE functions
+            register1 = register_binary_to_char(register1_in_binary);   
+            register2 = register_binary_to_char(register2_in_binary);
+            address = strtol(memAddress,NULL,2); 
+        }
+        else if(opCodeInt == 2 || opCodeInt == 3 || opCodeInt == 4 || opCodeInt == 5 || opCodeInt == 6){
+
+            for(i = 5; i < 10; i++){
+                register1_in_binary[i-5] = instrucitonBinaryToExecute[i];       //Building Register1 out of the instruction for ALU Operations
+            }
+            for(i = 10; i < 15; i++){                                           //Building Register2 out of the instruction for ALU Operations
+                register2_in_binary[i-10] = instrucitonBinaryToExecute[i];
+            }
+
+            //getting the paramenters ready to send to the ALU functions
+            register1 = register_binary_to_char(register1_in_binary);
+            register2 = register_binary_to_char(register2_in_binary);
+        }
+        else if(opCodeInt == 7){
+
+            for(i = 5; i < 14; i++){
+                D_in_char[i-5] = instrucitonBinaryToExecute[i];                 //Building D out of the instruction for LEAQ Operations
+            }
+            for(i = 14; i < 19; i++){
+                Rb_in_char[i-14] = instrucitonBinaryToExecute[i];               //Building Rb out of the instruction for LEAQ Operations
+            }
+            for(i = 19; i < 24; i++){
+                Ri_in_char[i-19] = instrucitonBinaryToExecute[i];               //Building Ri out of the instruction for LEAQ Operations
+            }
+            for(i = 24; i < 27; i++){
+                S_in_char[i-24] = instrucitonBinaryToExecute[i];                //Building S out of the instruction for LEAQ Operations
+            }
+            for(i = 27; i < 32; i++){
+                dest_in_char[i-27] = instrucitonBinaryToExecute[i];             //Building destination out of the instruction for LEAQ Operations
+            }
+
+            //getting the paramenters ready to send to the LEAQ function
+            Rb = register_binary_to_char(Rb_in_char);
+            Ri = register_binary_to_char(Ri_in_char);
+            S = strtol(S_in_char,NULL,2);
+            D = strtol(D_in_char,NULL,2);
+            dest = register_binary_to_char(dest_in_char);
+        }
+        else if(opCodeInt == 8 || opCodeInt == 9){
+            for(i = 5; i < 10; i++){
+                register1_in_binary[i-5] = instrucitonBinaryToExecute[i];         //Building Register1 out of the instruction for CMPQ, TEST Operations
+            }
+            for(i = 10; i < 15; i++){                                             //Building Register2 out of the instruction for CMPQ, TEST Operations
+                register2_in_binary[i-10] = instrucitonBinaryToExecute[i];
+            }
+
+            //getting the paramenters ready to send to the CMPQ, TEST functions
+            register1 = register_binary_to_char(register1_in_binary);
+            register2 = register_binary_to_char(register2_in_binary);
+        }
+        
+    //Using Function pointers for ALU operations. Since div and add use different function parameters, have used different function pointers for them
+    
+    void (*fun_ptr_arr[])(char*,char*) = {call_mod,sub,mul,call_add};
+    int (*fun_ptr_arr_div[])(int,int,int,int) = {division};
+    int (*fun_ptr_arr_add[])(int,int) = {add};
+
+    int dividend;
+    int divisor;
+    int divisionResult;
+
+    switch(opCodeInt){
+        case 0: execute_Fetch(operation, register1, address);
+                break;
+        case 1: execute_store(operation, register1, address);
+                break;
+        case 2: (*fun_ptr_arr[3])(register1, register2);
+                break;
+        case 3: (*fun_ptr_arr[1])(register1, register2);
+                break;
+        case 4: (*fun_ptr_arr[2])(register1, register2);    
+                break;
+        case 5: dividend = get_register(register1);
+                divisor = get_register(register2);
+                divisionResult= (*fun_ptr_arr_div[0])(dividend, divisor, divisor, 0);       //Initially we send remainder as '0'.
+                set_register(register2, divisionResult);
+                printf("\n ******** RESULT ******** \n"); 
+                printf("Division Quotient: %d \n", divisionResult);
+                break;
+        case 6: (*fun_ptr_arr[0])(register1, register2);
+                break;
+        case 7: call_leaq(D,Rb,Ri,S,dest);
+                break;
+        case 8: call_cmpq(register1, register2);
+                break;
+        case 9: call_test(register1, register2);
+                break;
+        case 10: printf("JUMP Instruction can now be Executed and all the registers can be manipulated along with PC\n");
+        default: printf("UNEXPECTED OPCODE, PLEASE CHECK IF YOU ADDED THE OPERATION INTO THE INSTRUCTION SET ARCHITECTURE!");
+    }
+    printf("\n\n========================Values after executing instruction : %s ==================\n", operation_to_display) ;
+    print_values();
+    PC += 4; 
+    return PC;
+       
 }
 
 
@@ -1109,8 +1289,8 @@ void storeInstructionToMemory(char *filename){
                         strcmp(operation,"SETNE")==0 ||
                         strcmp(operation,"SETS")==0 ||
                         strcmp(operation,"SETNS")==0
-                        )
-                        {strcat(code, "0000000000000000000000");         //UNUSED ADDRESS PART IN THE INSTRUCTION
+                        ){
+                        strcat(code, "0000000000000000000000");         //UNUSED ADDRESS PART IN THE INSTRUCTION
                         instruction = strtol(code,NULL,2);
                         MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
                         printf("Final code of ALU instruction to store in memory is = %s\n", code);
@@ -1306,68 +1486,8 @@ void storeInstructionToMemory(char *filename){
             split = strtok(NULL, " ,.- ()\n");
             
         }
-        
-/*------------------------------FETCHING INSTRUCTION FROM MEMORY-----------------------------------------------*/
-        char* instrucitonBinaryToExecute = decimal_to_binary(MEMORY[PC/4], 32);
-        printf("***---Reading Instruction From Memory---***\n");
-        printf("Binary Instruction Fetched From Memory Pointed By PC = %s\n", instrucitonBinaryToExecute);
-        
-        int i;
-        char opCodeBinary[5];
-
-        for(i = 0; i < 5; i++){
-            opCodeBinary[i] = instrucitonBinaryToExecute[i];
-        }
-        int opCodeInt = strtol(opCodeBinary,NULL,2);
-        printf("OP Code of the instruction is = %s\n", opCodeBinary);
-        printf("OP code in decimal is = %d\n", opCodeInt);
-
-
-        
-	//Using Function pointers for ALU operations. Since div and add use different function parameters, have used different function pointers for them
-	
-	void (*fun_ptr_arr[])(char*,char*) = {call_mod,sub,mul,call_add};
-	int (*fun_ptr_arr_div[])(int,int,int,int) = {division};
-	int (*fun_ptr_arr_add[])(int,int) = {add};
-
-    int dividend;
-    int divisor;
-    int divisionResult;
-
-    switch(opCodeInt){
-        case 0: execute_Fetch(operation, register1, address);
-                break;
-        case 1: execute_store(operation, register1, address);
-                break;
-        case 2: (*fun_ptr_arr[3])(register1, register2);
-                break;
-        case 3: (*fun_ptr_arr[1])(register1, register2);
-                break;
-        case 4: (*fun_ptr_arr[2])(register1, register2);    
-                break;
-        case 5: dividend = get_register(register1);
-                divisor = get_register(register2);
-                divisionResult= (*fun_ptr_arr_div[0])(dividend, divisor, divisor, 0);       //Initially we send remainder as '0'.
-                set_register(register2, divisionResult);
-                printf("\n ******** RESULT ******** \n"); 
-                printf("Division Quotient: %d \n", divisionResult);
-                break;
-        case 6: (*fun_ptr_arr[0])(register1, register2);
-                break;
-        case 7: call_leaq(D,Rb,Ri,S,dest);
-                break;
-        case 8: call_cmpq(register1, register2);
-                break;
-        case 9: call_test(register1, register2);
-                break;
-        case 10: printf("\n Jump to be implemented after Tarshith's integration\n");
-                break;
-        default: printf("UNEXPECTED OPCODE, PLEASE CHECK IF YOU ADDED THE OPERATION INTO THE INSTRUCTION SET ARCHITECTURE!");
-    }
-    printf("\n\n========================Values after executing instruction : %s ==================\n", operation) ;
-    print_values();
-    PC += 4;    
-    lines--;
+        PC = executeInstruction(PC,operation);
+        lines--;
     }
     fclose(instructions_file);
     return;

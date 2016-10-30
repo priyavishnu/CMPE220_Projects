@@ -282,15 +282,36 @@ char *get_operation(int opCodeInt){
         case 9: operation = "TEST";
                 break;
         case 10: operation = "JUMP";
-                break;
-        case 11: operation = "SETE";
-                break;
-        case 12: operation = "SETNE";
-                break;
-        case 13: operation = "SETS";
-                break;
-        case 14: operation = "SETNS";
-                break;
+                 break;
+        case 11: operation = "JE";
+                 break;
+        case 12: operation = "JNE";
+                 break;
+        case 13: operation = "JS";
+                 break;
+        case 14: operation = "JNS";
+                 break;
+        case 15: operation = "JG";
+                 break;
+        case 16: operation = "JGE";
+                 break;
+        case 17: operation = "JL";
+                 break;
+        case 18: operation = "JLE";
+                 break;
+        case 19: operation = "JA";
+                 break;
+        case 20: operation = "JB";
+                 break;
+        case 21: operation = "SETE";
+                 break;
+        case 22: operation = "SETNE";
+                 break;
+        case 23: operation = "SETS";
+                 break;
+        case 24: operation = "SETNS";
+                 break;
+        
         default: printf("UNLNOWN OPCODE VALUE\n");
     }
     return operation;
@@ -965,6 +986,101 @@ int get_line(char *label){
     
 }
 
+//Function for executing the instruction JNS, jumps if sign flag = 0
+void call_jns(int offset_address)
+{
+    int signFlag = (FLG >> 1) & 0x1;
+    if(!signFlag){
+        PC = (40000 + (4 * offset_address));
+    }
+    return;
+}
+
+/*Flags
+ 
+ Zero flag = FLG[0]
+ Sign flag = FLG[1]
+ Carry flag = FLG[2]
+ Overflow flag = FLG[3]
+ 
+ */
+
+
+//Function for executing the instruction JG, jumps if ~(SF^OF)&~ZF
+void call_jg(int offset_address)
+{
+    int signFlag = (FLG >> 1) & 0x1;
+    int overflowFlag = (FLG >> 3) & 0x1;
+    int zeroFlag = FLG & 0x1;
+    
+    if(!(signFlag ^ overflowFlag) & !(zeroFlag)){
+        PC = (40000 + (4 * offset_address));
+    }
+    return;
+}
+
+//Function for executing the instruction JGE, jumps if ~(SF^OF)
+void call_jge(int offset_address)
+{
+    int signFlag = (FLG >> 1) & 0x1;
+    int overflowFlag = (FLG >> 3) & 0x1;
+    
+    if(!(signFlag ^ overflowFlag)){
+        PC = (40000 + (4 * offset_address));
+    }
+    return;
+}
+
+//Function for executing the instruction JL, jumps if (SF^OF)
+void call_jl(int offset_address)
+{
+    int signFlag = (FLG >> 1) & 0x1;
+    int overflowFlag = (FLG >> 3) & 0x1;
+    
+    if(signFlag ^ overflowFlag){
+        PC = (40000 + (4 * offset_address));
+    }
+    return;
+}
+
+//Function for executing the instruction JLE, jumps if (SF^OF) | ZF
+void call_jle(int offset_address)
+{
+    int signFlag = (FLG >> 1) & 0x1;
+    int overflowFlag = (FLG >> 3) & 0x1;
+    int zeroFlag = FLG & 0x1;
+    
+    if((signFlag ^ overflowFlag) | zeroFlag){
+        PC = (40000 + (4 * offset_address));
+    }
+    return;
+}
+
+//Function for executing the instruction JA, jumps if ~CF & ~ZF
+void call_ja(int offset_address)
+{
+    int carryFlag = (FLG >> 2) & 0x1;
+    int zeroFlag = FLG & 0x1;
+    
+    if(!(carryFlag) & !(zeroFlag)){
+        PC = (40000 + (4 * offset_address));
+    }
+    return;
+}
+
+
+//Function for executing the instruction JB, jumps if CF = 0
+void call_jb(int offset_address)
+{
+    int carryFlag = (FLG >> 2) & 0x1;
+    if(!carryFlag){
+        PC = (40000 + (4 * offset_address));
+    }
+    return;
+}
+
+
+
 
 void executeInstruction(int PC_max){
     while (PC < PC_max){
@@ -1073,7 +1189,7 @@ void executeInstruction(int PC_max){
                 register1 = register_binary_to_char(register1_in_binary);
                 register2 = register_binary_to_char(register2_in_binary);
             }
-            else if (opCodeInt == 10){
+            else if (opCodeInt >= 10 && opCodeInt <= 20){
                 for(i = 5; i < 32; i++){
                     memAddress[i-5] = instrucitonBinaryToExecute[i];        //Fetching the line number to calculate the new Jump value
                 }
@@ -1117,7 +1233,21 @@ void executeInstruction(int PC_max){
             case 9: call_test(register1, register2);
                     break;
             case 10: PC = (40000 + (4 * offset_address));
-                     break;   
+                     break;
+            case 14: call_jns(offset_address);
+                     break;
+            case 15: call_jg(offset_address);
+                     break;
+            case 16: call_jge(offset_address);
+                     break;
+            case 17: call_jl(offset_address);
+                     break;
+            case 18: call_jle(offset_address);
+                     break;
+            case 19: call_ja(offset_address);
+                     break;
+            case 20: call_jb(offset_address);
+                     break;
             default: printf("UNEXPECTED OPCODE, PLEASE CHECK IF YOU ADDED THE OPERATION INTO THE INSTRUCTION SET ARCHITECTURE!");
         }
         printf("\n\n========================Values after executing instruction : %s ==================\n", get_operation(opCodeInt)) ;
@@ -1250,17 +1380,60 @@ int storeInstructionToMemory(char *filename){
                     strcat(code, "01010");
                     operation = split;
                 }
-                else if(strcmp(split, "SETE")==0){
+                else if(strcmp(split, "JE")==0){
                     strcat(code, "01011");
                     operation = split;
-                }else if(strcmp(split, "SETNE")==0){
+                }
+                else if(strcmp(split, "JNE")==0){
                     strcat(code, "01100");
                     operation = split;
-                }else if(strcmp(split, "SETS")==0){
+                }
+                else if(strcmp(split, "JS")==0){
                     strcat(code, "01101");
                     operation = split;
-                }else if(strcmp(split, "SETNS")==0){
+                }
+                else if(strcmp(split, "JNS")==0){
                     strcat(code, "01110");
+                    operation = split;
+                }
+                else if(strcmp(split, "JG")==0){
+                    strcat(code, "01111");
+                    operation = split;
+                }
+                else if(strcmp(split, "JGE")==0){
+                    strcat(code, "10000");
+                    operation = split;
+                }
+                else if(strcmp(split, "JL")==0){
+                    strcat(code, "10001");
+                    operation = split;
+                }
+                else if(strcmp(split, "JLE")==0){
+                    strcat(code, "10010");
+                    operation = split;
+                }
+                else if(strcmp(split, "JA")==0){
+                    strcat(code, "10011");
+                    operation = split;
+                }
+                else if(strcmp(split, "JB")==0){
+                    strcat(code, "10100");
+                    operation = split;
+                }
+                else if(strcmp(split, "SETE")==0){
+                    strcat(code, "10101");
+                    operation = split;
+                }
+                else if(strcmp(split, "SETNE")==0){
+                    strcat(code, "10110");
+                    operation = split;
+                }
+                else if(strcmp(split, "SETS")==0){
+                    strcat(code, "10111");
+                    operation = split;
+                }
+                else if(strcmp(split, "SETNS")==0){
+                    strcat(code, "11000");
                     operation = split;
                 }
                 argNum++;
@@ -1290,7 +1463,144 @@ int storeInstructionToMemory(char *filename){
                 
                 }
                 
+                else if(strcmp(operation,"JNS")==0)
+                {
+                    int line_no;
+                    label_string = split;
+                    printf("The parsed label is: %s\n", label_string);
+                    line_no = get_line(label_string);
+                    printf("The line no obtained is: %d\n", line_no);
+                    char* address_offset = decimal_to_binary(line_no, 27);
+                    printf("Binary address offset to jump if non-negative(JNS) = %s\n", address_offset);
+                    
+                    strcat(code, address_offset);
+                    printf("Binary code for jump if non-negative(JNS) = %s\n", code);
+                    instruction = strtol(code,NULL,2);
+                    printf("Binary instruction for jump if non-negative(JNS) = %d\n", instruction);
+                    MEMORY[PC/4] = instruction;             //INSTRUCTION STORED IN THE MEMORY
+                    printf("Storing at address = %d\n",PC/4);
+                    argNum++;
+                }
                 
+                else if(strcmp(operation,"JG")==0)
+                {
+                    int line_no;
+                    label_string = split;
+                    printf("The parsed label is: %s\n", label_string);
+                    line_no = get_line(label_string);
+                    printf("The line no obtained is: %d\n", line_no);
+                    char* address_offset = decimal_to_binary(line_no, 27);
+                    printf("Binary address offset to jump if greater(JG) = %s\n", address_offset);
+                    
+                    strcat(code, address_offset);
+                    printf("Binary code for jump if greater(JG) = %s\n", code);
+                    instruction = strtol(code,NULL,2);
+                    printf("Binary instruction for jump if greater(JG) = %d\n", instruction);
+                    MEMORY[PC/4] = instruction;             //INSTRUCTION STORED IN THE MEMORY
+                    printf("Storing at address = %d\n",PC/4);
+                    argNum++;
+                    
+                }
+                
+                else if(strcmp(operation,"JGE")==0)
+                {
+                    int line_no;
+                    label_string = split;
+                    printf("The parsed label is: %s\n", label_string);
+                    line_no = get_line(label_string);
+                    printf("The line no obtained is: %d\n", line_no);
+                    char* address_offset = decimal_to_binary(line_no, 27);
+                    printf("Binary address offset to jump if greater or equal(JGE) = %s\n", address_offset);
+                    
+                    strcat(code, address_offset);
+                    printf("Binary code for jump if greater(JG) = %s\n", code);
+                    instruction = strtol(code,NULL,2);
+                    printf("Binary instruction for jump if greater or equal(JGE) = %d\n", instruction);
+                    MEMORY[PC/4] = instruction;             //INSTRUCTION STORED IN THE MEMORY
+                    printf("Storing at address = %d\n",PC/4);
+                    argNum++;
+                    
+                }
+
+                else if(strcmp(operation,"JL")==0)
+                {
+                    int line_no;
+                    label_string = split;
+                    printf("The parsed label is: %s\n", label_string);
+                    line_no = get_line(label_string);
+                    printf("The line no obtained is: %d\n", line_no);
+                    char* address_offset = decimal_to_binary(line_no, 27);
+                    printf("Binary address offset to jump if less(JL) = %s\n", address_offset);
+                    
+                    strcat(code, address_offset);
+                    printf("Binary code for jump if less(JG) = %s\n", code);
+                    instruction = strtol(code,NULL,2);
+                    printf("Binary instruction for jump if less(JL) = %d\n", instruction);
+                    MEMORY[PC/4] = instruction;             //INSTRUCTION STORED IN THE MEMORY
+                    printf("Storing at address = %d\n",PC/4);
+                    argNum++;
+                    
+                }
+                
+                else if(strcmp(operation,"JLE")==0)
+                {
+                    int line_no;
+                    label_string = split;
+                    printf("The parsed label is: %s\n", label_string);
+                    line_no = get_line(label_string);
+                    printf("The line no obtained is: %d\n", line_no);
+                    char* address_offset = decimal_to_binary(line_no, 27);
+                    printf("Binary address offset to jump if less or equal(JLE) = %s\n", address_offset);
+                    
+                    strcat(code, address_offset);
+                    printf("Binary code for jump if less or equal(JLE) = %s\n", code);
+                    instruction = strtol(code,NULL,2);
+                    printf("Binary instruction for jump if less or equal(JLE) = %d\n", instruction);
+                    MEMORY[PC/4] = instruction;             //INSTRUCTION STORED IN THE MEMORY
+                    printf("Storing at address = %d\n",PC/4);
+                    argNum++;
+                    
+                }
+                
+                else if(strcmp(operation,"JA")==0)
+                {
+                    int line_no;
+                    label_string = split;
+                    printf("The parsed label is: %s\n", label_string);
+                    line_no = get_line(label_string);
+                    printf("The line no obtained is: %d\n", line_no);
+                    char* address_offset = decimal_to_binary(line_no, 27);
+                    printf("Binary address offset to jump if above(JA) = %s\n", address_offset);
+                    
+                    strcat(code, address_offset);
+                    printf("Binary code for jump if above(JA) = %s\n", code);
+                    instruction = strtol(code,NULL,2);
+                    printf("Binary instruction for jump if above(JA) = %d\n", instruction);
+                    MEMORY[PC/4] = instruction;             //INSTRUCTION STORED IN THE MEMORY
+                    printf("Storing at address = %d\n",PC/4);
+                    argNum++;
+                    
+                }
+                
+                else if(strcmp(operation,"JB")==0)
+                {
+                    int line_no;
+                    label_string = split;
+                    printf("The parsed label is: %s\n", label_string);
+                    line_no = get_line(label_string);
+                    printf("The line no obtained is: %d\n", line_no);
+                    char* address_offset = decimal_to_binary(line_no, 27);
+                    printf("Binary address offset to jump if below(JB) = %s\n", address_offset);
+                    
+                    strcat(code, address_offset);
+                    printf("Binary code for jump if below(JB) = %s\n", code);
+                    instruction = strtol(code,NULL,2);
+                    printf("Binary instruction for jump if below(JB) = %d\n", instruction);
+                    MEMORY[PC/4] = instruction;             //INSTRUCTION STORED IN THE MEMORY
+                    printf("Storing at address = %d\n",PC/4);
+                    argNum++;
+                    
+                }                
                 else if(strcmp(operation,"LEAQ")==0)
                 {
                     

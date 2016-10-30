@@ -7,9 +7,9 @@
 #include <unistd.h>
 
 
-#define INSTRUCTION_MEMORY_BASE    	 10000
+#define INSTRUCTION_MEMORY_BASE      10000
 #define BOOT_MEMORY_BASE                     0
-#define MEM_MAX                        	 65535
+#define MEM_MAX                          65535
 #define NUMBER_OF_INSTRUCTIONS              30
 #define STACK_BASE                       15000
 #define LABEL_MAX                          100
@@ -45,19 +45,19 @@ char labels[LABEL_MAX][20] = {0};
 
 /* Opcodes */
 
-/*	FETCH 	= 00000,
-	STORE 	= 00001,
-	ADD	    = 00010,
-	SUB	    = 00011,
-	MUL	    = 00100
-	DIV	    = 00101,
-	MOD	    = 00110,
-	LEAQ 	= 00111,
-	CMPQ    = 01000,
-    TEST	= 01001,
-        	= 01010,
-	       	= 01011,
-	       	= 01100,
+/*  FETCH   = 00000,
+    STORE   = 00001,
+    ADD     = 00010,
+    SUB     = 00011,
+    MUL     = 00100
+    DIV     = 00101,
+    MOD     = 00110,
+    LEAQ    = 00111,
+    CMPQ    = 01000,
+    TEST    = 01001,
+            = 01010,
+            = 01011,
+            = 01100,
             = 01101,     // For Future Instructions
             = 01110,
             = 01111     */
@@ -256,6 +256,44 @@ char *register_binary_to_char(char *reg_in_binary){
         default: printf("UNLNOWN REGISTER VALUE\n");
     }
     return register_in_char;
+}
+
+char *get_operation(int opCodeInt){
+    char *operation;
+    switch(opCodeInt){
+        case 0: operation = "FETCH";
+                break;
+        case 1: operation = "STORE";
+                break;
+        case 2: operation = "ADD";
+                break;
+        case 3: operation = "SUB";
+                break;
+        case 4: operation = "MUL";
+                break;
+        case 5: operation = "DIV";
+                break;
+        case 6: operation = "MOD";
+                break;
+        case 7: operation = "LEAQ";
+                break;
+        case 8: operation = "CMPQ";
+                break;
+        case 9: operation = "TEST";
+                break;
+        case 10: operation = "JUMP";
+                break;
+        case 11: operation = "SETE";
+                break;
+        case 12: operation = "SETNE";
+                break;
+        case 13: operation = "SETS";
+                break;
+        case 14: operation = "SETNS";
+                break;
+        default: printf("UNLNOWN OPCODE VALUE\n");
+    }
+    return operation;
 }
 
 
@@ -629,7 +667,7 @@ void sub(char* reg1, char* reg2){
 
 //Function for multiplying two registers MUL R1,R2 => R2 = R2 * R1 
 void  mul(char* reg1, char* reg2) {
-	
+    
     int num1 = get_register(reg1);
     int num2 = get_register(reg2);
     int product = 0;
@@ -641,8 +679,8 @@ void  mul(char* reg1, char* reg2) {
       //Setting flags
         set_zero(product);
         set_sign(product);
-	return ;
-    }	    
+    return ;
+    }       
     else if (num1 ==1){ 
         product = num2;
         printf("\n Multiplication result: %d \n", product);
@@ -653,24 +691,24 @@ void  mul(char* reg1, char* reg2) {
         return;
     }
     else if (num2 ==1){
-	product = num1;	
+    product = num1; 
         printf("\n Multiplication result: %d \n", product);
         set_register(reg2,product);
       //Setting flags
         set_zero(product);
         set_sign(product);
-    	return;
+        return;
     }
     else if (num1 <0 && num2 < 0){
-    	num1 = abs(num1);
-	num2 = abs(num2);
+        num1 = abs(num1);
+    num2 = abs(num2);
     }
     while(num2 != 0){ 
-    	if (num2 & 0x01){
-	    product  = add(product,num1);
-	}
-	num1 <<= 1;
-	num2 >>= 1;
+        if (num2 & 0x01){
+        product  = add(product,num1);
+    }
+    num1 <<= 1;
+    num2 >>= 1;
     }
     
     //Setting flags
@@ -928,25 +966,23 @@ int get_line(char *label){
 }
 
 
-int executeInstruction(int PC, char *operation_to_display){
+void executeInstruction(int PC){
     char* instrucitonBinaryToExecute = decimal_to_binary(MEMORY[PC/4], 32);
-        printf("***---Reading Instruction From Memory---***\n");
-        printf("Binary Instruction Fetched From Memory Pointed By PC = %s\n", instrucitonBinaryToExecute);
         
-        char opCodeBinary[5];
-        char register1_in_binary[5];
-        char register2_in_binary[5];
-        char memAddress[16];
+        char* opCodeBinary = (char*) malloc(5);
+        char* register1_in_binary = (char*) malloc(5);
+        char* register2_in_binary = (char*) malloc(5);
+        char* memAddress = (char*) malloc(16);
 
         int address;
         int S=0,D=0;
         int i;
         
-        char Rb_in_char[5];
-        char Ri_in_char[5];
-        char dest_in_char[5];
-        char S_in_char[3];
-        char D_in_char[9];
+        char* Rb_in_char = (char*) malloc(5);
+        char* Ri_in_char = (char*) malloc(5);
+        char* dest_in_char = (char*) malloc(5);
+        char* S_in_char = (char*) malloc(3);
+        char* D_in_char = (char*) malloc(9);
 
         char *Ri;
         char *Rb;
@@ -959,9 +995,11 @@ int executeInstruction(int PC, char *operation_to_display){
             opCodeBinary[i] = instrucitonBinaryToExecute[i];
         }
         int opCodeInt = strtol(opCodeBinary,NULL,2);
-
-        printf("OP Code of the instruction is = %s\n", opCodeBinary);
         printf("OP code in decimal is = %d\n", opCodeInt);
+
+        printf("\n\n************************************************** NOW EXECUTING %s *************************************************\n\n", get_operation(opCodeInt));
+        printf("***---Reading Instruction From Memory---***\n");
+        printf("Binary Instruction Fetched From Memory Pointed By PC = %s\n", instrucitonBinaryToExecute);
 
         if(opCodeInt == 0 || opCodeInt == 1){
             if(opCodeInt == 0){                                                 //Building Operation for STORE and FETCH functions
@@ -1072,23 +1110,22 @@ int executeInstruction(int PC, char *operation_to_display){
         case 10: printf("JUMP Instruction can now be Executed and all the registers can be manipulated along with PC\n");
         default: printf("UNEXPECTED OPCODE, PLEASE CHECK IF YOU ADDED THE OPERATION INTO THE INSTRUCTION SET ARCHITECTURE!");
     }
-    printf("\n\n========================Values after executing instruction : %s ==================\n", operation_to_display) ;
+    printf("\n\n========================Values after executing instruction : %s ==================\n", get_operation(opCodeInt)) ;
     print_values();
-    PC += 4; 
-    return PC;
+    return;
        
 }
 
 
 //Function for storing the instruction to the memory
-void storeInstructionToMemory(char *filename){
+int storeInstructionToMemory(char *filename){
     
     char inst[NUMBER_OF_INSTRUCTIONS];
     int lines = 0;
     char *label_string;
     char *split = (char *) malloc(16);
     char * str = (char *) malloc(16);
-    
+    int lines_required_to_send_to_execute_instruction = 0;
     
     FILE *instructions_file;
     
@@ -1216,7 +1253,7 @@ void storeInstructionToMemory(char *filename){
                     operation = split;
                 }
                 argNum++;
-                printf("\n \n ************ Now executing Instruction: %s ************* \n", operation);
+                printf("\n \n ************ Now Storing Instruction: %s ************* \n", operation);
                 printf("\nOpcode: in string: %s And in binary: %s \n", operation, code);
             }
             
@@ -1258,7 +1295,7 @@ void storeInstructionToMemory(char *filename){
                         memD[i] = '0';
 
                     strcat(code, memD);
-                    printf("Register1: %s \n", memD);
+                    printf("D =  %s \n", memD);
                     //printf("inside D variable extract %d\n", D);
                     instruction = strtol(code,NULL,2);
                     MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
@@ -1486,11 +1523,12 @@ void storeInstructionToMemory(char *filename){
             split = strtok(NULL, " ,.- ()\n");
             
         }
-        PC = executeInstruction(PC,operation);
+        PC +=4;
         lines--;
+        lines_required_to_send_to_execute_instruction++;
     }
     fclose(instructions_file);
-    return;
+    return lines_required_to_send_to_execute_instruction;
     
 }
 void print_values(){
@@ -1517,9 +1555,9 @@ void print_values(){
 }
 
 
-void initialize_code_test() {		
+void initialize_code_test() {       
     
-    MEMORY[20000] = 222;	
+    MEMORY[20000] = 222;    
     r0 = 1;
     r1 = 4;
     r2 = 20;
@@ -1528,7 +1566,7 @@ void initialize_code_test() {
     r5 = 6;
     r6 = 7; 
     r7 = 8;
-    FLG = 0;	
+    FLG = 0;    
 
 }
 
@@ -1538,8 +1576,14 @@ int main(int argc, char *argv[]){
     printf("\n\n========================Initial values before execution =========================") ;
     print_values();
     // read_instructions();
-    storeInstructionToMemory(argv[1]);
-    
+    int lines = storeInstructionToMemory(argv[1]);
+    PC = 40000;
+    while(lines > 0){
+        executeInstruction(PC);
+        PC += 4;
+        lines--;
+    }    
+
     
     return 0;
 }

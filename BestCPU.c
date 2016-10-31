@@ -253,7 +253,7 @@ char *register_binary_to_char(char *reg_in_binary){
                 break;
         case 7: register_in_char = "R7";
                 break;
-        default: printf("UNLNOWN REGISTER VALUE\n");
+        default: printf("UNKNOWN REGISTER VALUE\n");
     }
     return register_in_char;
 }
@@ -311,8 +311,9 @@ char *get_operation(int opCodeInt){
                  break;
         case 24: operation = "SETNS";
                  break;
-        
-        default: printf("UNLNOWN OPCODE VALUE\n");
+        case 25: operation = "LOADI";
+                 break;
+        default: printf("UNKNOWN OPCODE VALUE\n");
     }
     return operation;
 }
@@ -996,16 +997,6 @@ void call_jns(int offset_address)
     return;
 }
 
-/*Flags
- 
- Zero flag = FLG[0]
- Sign flag = FLG[1]
- Carry flag = FLG[2]
- Overflow flag = FLG[3]
- 
- */
-
-
 //Function for executing the instruction JG, jumps if ~(SF^OF)&~ZF
 void call_jg(int offset_address)
 {
@@ -1089,11 +1080,14 @@ void executeInstruction(int PC_max){
             char* register1_in_binary = (char*) malloc(5);
             char* register2_in_binary = (char*) malloc(5);
             char* memAddress = (char*) malloc(16);
+            char* immediateValue = (char*) malloc(17);
 
             int address;
             int offset_address;
             int S=0,D=0;
+        int immediate;
             int i;
+        
             
             char* Rb_in_char = (char*) malloc(5);
             char* Ri_in_char = (char*) malloc(5);
@@ -1195,6 +1189,18 @@ void executeInstruction(int PC_max){
                 }
                 offset_address = strtol(memAddress,NULL,2); 
             }
+            else if (opCodeInt == 25){
+                for(i = 5; i < 10; i++){
+                    register1_in_binary[i-5] = instrucitonBinaryToExecute[i];       //Building Register1 out of the instruction
+                }
+                for (i = 16; i<32; i++) {
+                    immediateValue[i-16] = instrucitonBinaryToExecute[i];               //Building immediate value out of the instruction
+                }
+                register1 = register_binary_to_char(register1_in_binary);
+                
+                immediate = strtol(immediateValue,NULL,2);
+                
+            }
             
         //Using Function pointers for ALU operations. Since div and add use different function parameters, have used different function pointers for them
         
@@ -1247,6 +1253,8 @@ void executeInstruction(int PC_max){
             case 19: call_ja(offset_address);
                      break;
             case 20: call_jb(offset_address);
+                     break;
+            case 25: set_register(register1, immediate);
                      break;
             default: printf("UNEXPECTED OPCODE, PLEASE CHECK IF YOU ADDED THE OPERATION INTO THE INSTRUCTION SET ARCHITECTURE!");
         }
@@ -1434,6 +1442,10 @@ int storeInstructionToMemory(char *filename){
                 }
                 else if(strcmp(split, "SETNS")==0){
                     strcat(code, "11000");
+                    operation = split;
+                }
+                else if(strcmp(split, "LOADI")==0){
+                    strcat(code, "11001");
                     operation = split;
                 }
                 argNum++;
@@ -1663,7 +1675,28 @@ int storeInstructionToMemory(char *filename){
             
             else if(argNum == 2)
             {
-                if((strcmp(operation,"FETCH")==0)||(strcmp(operation,"STORE")==0))
+                if(strcmp(operation, "LOADI")==0)
+                {
+                    int value = atoi(split);
+                    char* immediate = (char*) malloc(17);
+                    strcpy(immediate, decimal_to_binary(value, 17));
+                    
+                    strcat(code, "00000");
+                    printf("Immediate value to be stored: %s \n", immediate);
+                    strcat(code, immediate);
+                    printf("\nCode to be stored in memory in binary: %s \n", code);
+                    
+                    instruction = strtol(code, NULL, 2);
+                    MEMORY[PC/4] = instruction;
+                    printf("Final code to store in memory in int: %d\n", instruction);
+                    printf("instruction code is = %d and memory location at which it is stored is = %d\n", instruction, PC/4);
+                    printf("Memory[PC/4] = %d\n", MEMORY[PC/4]);
+                    
+                    argNum++;
+
+                    
+                }
+                else if((strcmp(operation,"FETCH")==0)||(strcmp(operation,"STORE")==0))
                 {
                     
                     printf("inside memory vaibale extract\n");

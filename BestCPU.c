@@ -675,7 +675,7 @@ void sub(char* reg1, char* reg2){
     //Setting flags
     set_zero(num1);
     set_sign(num1);
-    if(num1 <= num2 )
+    if(num1 < num2 )
         set_carry(n1,n2, num1);
     set_overflow_sub(n1, n2, num1);
     
@@ -922,7 +922,7 @@ void call_cmpq(char *reg1, char *reg2)
     //Setting flags
     set_zero(num1);
     set_sign(num1);
-    if(num1 <= num2 )
+    if(num1 < num2 )
     {
     set_carry(n1,n2, num1);
     }
@@ -1841,7 +1841,7 @@ void initialize_code_test() {
     r1 = 4;
     r2 = 20;
     r3 = 4;
-    r4 = 3;
+    r4 = 4;
     r5 = 6;
     r6 = 7; 
     r7 = 8;

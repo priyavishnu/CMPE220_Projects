@@ -643,11 +643,11 @@ int twosCompliment (int num){
 }
 
 
-//Function for subtracting two registers SUB R1, R2 =>  R2 = R1 - R2
+//Function for subtracting two registers SUB R1, R2 =>  R2 = R2 - R1
 void sub(char* reg1, char* reg2){
 
-    int num1 = get_register(reg1);
-    int num2 = get_register(reg2);
+    int num1 = get_register(reg2);
+    int num2 = get_register(reg1);
 
     int n1 = num1, n2 = twosCompliment(num2);
     

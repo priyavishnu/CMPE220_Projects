@@ -998,6 +998,40 @@ int get_line(char *label){
     
 }
 
+//Function for executing the instruction JE, jumps if Zero flag = 1
+void call_je(int offset_address)
+{
+
+    int zeroFlag = FLG & 0x1;
+    
+    if (zeroFlag){
+        PC = (40000 + (4 * offset_address));
+    }
+    return;
+}
+
+//Function for executing the instruction JNE, jumps if Zero flag = 0
+void call_jne(int offset_address)
+{
+    
+    int zeroFlag = FLG & 0x1;
+    
+    if(!(zeroFlag)){
+        PC = (40000 + (4 * offset_address));
+    }
+    return;
+}
+
+//Function for executing the instruction JS, jumps if sign flag = 1
+void call_js(int offset_address)
+{
+    int signFlag = (FLG >> 1) & 0x1;
+    if(signFlag){
+        PC = (40000 + (4 * offset_address));
+    }
+    return;
+}
+
 //Function for executing the instruction JNS, jumps if sign flag = 0
 void call_jns(int offset_address)
 {
@@ -1238,6 +1272,12 @@ void executeInstruction(int PC_max){
                     break;
             case 10: PC = (40000 + (4 * offset_address));
                      break;
+            case 11: call_je(offset_address);
+                     break;
+            case 12: call_jne(offset_address);
+                     break;
+            case 13: call_js(offset_address);
+                     break;
             case 14: call_jns(offset_address);
                      break;
             case 15: call_jg(offset_address);
@@ -1452,6 +1492,7 @@ int storeInstructionToMemory(char *filename){
                     strcat(code, "11010");
                     operation = split;
                 }
+                else printf("UNEXPECTED OPCODE, PLEASE CHECK IF YOU ADDED THE OPERATION INTO THE INSTRUCTION SET ARCHITECTURE!");
                 argNum++;
                 printf("\n \n ************ Now Storing Instruction: %s ************* \n", operation);
                 printf("\nOpcode: in string: %s And in binary: %s \n", operation, code);
@@ -1460,6 +1501,8 @@ int storeInstructionToMemory(char *filename){
             else if(argNum == 1)
             {
                 if(strcmp(operation,"JUMP")==0 ||
+                   strcmp(operation,"JE")==0 ||
+                   strcmp(operation,"JNE")==0 ||
                    strcmp(operation,"JNS")==0 ||
                    strcmp(operation,"JG")==0 ||
                    strcmp(operation,"JGE")==0 ||

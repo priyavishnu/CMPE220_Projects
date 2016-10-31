@@ -598,10 +598,24 @@ int add(int num1, int num2){
     int n1 = num1, n2 = num2;
     
     if(num1 == 0){
+        
+        //Setting flags
+        set_zero(num2);
+        set_sign(num2);
+        set_carry(n1, n2, num2);
+        set_overflow_add(n1, n2, num2);
+        
         return num2;
     }
     
     if(num2 == 0){
+        
+        //Setting flags
+        set_zero(num1);
+        set_sign(num1);
+        set_carry(n1, n2, num1);
+        set_overflow_add(n1, n2, num1);
+        
         return num1;
     }
     
@@ -628,11 +642,15 @@ void call_add(char* reg1, char* reg2){
     
     int num1 = get_register(reg1);
     int num2 = get_register(reg2);
-    int sum = add(num1,num2);;
+    
+    int sum = add(num1,num2);
+    
     set_register(reg2, sum);
     
     printf("\n ******** RESULT ******** \n");
     printf("Addition result: %d \n", sum);
+
+    
 }
 
 //Function to find twos compliment of a number
@@ -1839,7 +1857,7 @@ void initialize_code_test() {
     MEMORY[20000] = 222;    
     r0 = 1;
     r1 = 4;
-    r2 = 20;
+    r2 = 7;
     r3 = 4;
     r4 = 4;
     r5 = 6;

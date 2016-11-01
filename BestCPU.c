@@ -776,6 +776,7 @@ int division(int dividend, int divisor, int originalDivisor, int remainder)
     
     //printf("DIVIDEND %d     DIVISOR %d \n", dividend, divisor);
     
+    
     if(dividend == -2147483648 && divisor == -1){
         set_overflow_div();
         set_carry_div();
@@ -1139,7 +1140,7 @@ void call_jb(int offset_address)
 
 
 
-void executeInstruction(int PC_max){
+int executeInstruction(int PC_max){
     while (PC < PC_max){
         char* instrucitonBinaryToExecute = decimal_to_binary(MEMORY[PC/4], 32);   
             char* opCodeBinary = (char*) malloc(5);
@@ -1278,6 +1279,10 @@ void executeInstruction(int PC_max){
                     break;
             case 5: dividend = get_register(register1);
                     divisor = get_register(register2);
+                    if(divisor == 0){
+                    printf("Invalid DIV operation.Please check Divisor it can can not be 0\n");
+                    return -1;
+                    }
                     divisionResult= (*fun_ptr_arr_div[0])(dividend, divisor, divisor, 0);       //Initially we send remainder as '0'.
                     set_register(register2, divisionResult);
                     printf("\n ******** RESULT ******** \n"); 
@@ -1323,7 +1328,7 @@ void executeInstruction(int PC_max){
         print_values();
     
     }
-    return;
+    return 0;
        
 }
 
@@ -1908,7 +1913,7 @@ void initialize_code_test() {
     MEMORY[20000] = 222;    
     r0 = 1;
     r1 = 4;
-    r2 = 7;
+    r2 = 0;
     r3 = 4;
     r4 = 4;
     r5 = 6;

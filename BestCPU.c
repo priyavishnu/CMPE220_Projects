@@ -1554,11 +1554,30 @@ int storeInstructionToMemory(char *filename){
 
                 else if(strcmp(operation,"LEAQ")==0)
                 {
-                    
                     D = atoi(split);
                     if (D==0)
-                        S=0;
-                    
+                    {
+                        D=0;
+                        char *memD = (char*) malloc(17);
+                        strcpy(memD,decToBin(D));
+                        int i = 0;
+                        int len = 9 - strlen(memD);
+                        memmove(memD+len, memD, strlen(memD));
+                        for (i = 0; i < len; i++ )
+                            memD[i] = '0';
+                        
+                        strcat(code, memD);
+                        printf("D =  %s \n", memD);
+                        //printf("inside D variable extract %d\n", D);
+                        instruction = strtol(code,NULL,2);
+                        MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
+                        printf("Final code of ALU instruction to store in memory is = %s\n", code);
+                        printf("Storing at address = %d\n",PC/4);
+                        goto label_1;
+                        
+                    }
+                    else
+                    {
                     char *memD = (char*) malloc(17);
                     strcpy(memD,decToBin(D));
                     int i = 0;
@@ -1575,6 +1594,7 @@ int storeInstructionToMemory(char *filename){
                     printf("Final code of ALU instruction to store in memory is = %s\n", code);
                     printf("Storing at address = %d\n",PC/4);
                     argNum++;
+                    }
                     
                 }
                 else
@@ -1614,6 +1634,7 @@ int storeInstructionToMemory(char *filename){
             
             else if(argNum == 2)
             {
+            label_1:
                 if(strcmp(operation, "LOADI")==0)
                 {
                     int value = atoi(split);
@@ -1688,6 +1709,12 @@ int storeInstructionToMemory(char *filename){
                     printf("Storing at address = %d\n",PC/4);
                     argNum++;
                     
+                    if (D==0)
+                    {
+                       argNum++;
+                        
+                    }
+                    
                 }
                 
                 else if(strcmp(operation,"ADD")==0 ||
@@ -1725,7 +1752,6 @@ int storeInstructionToMemory(char *filename){
             }
             else if(argNum == 3)
             {
-                
                 if(strcmp(operation,"LEAQ")==0)
                 {
                     Ri = split;
@@ -1760,8 +1786,32 @@ int storeInstructionToMemory(char *filename){
                     S = atoi(split);
                     
                     if (S==0)
-                        S=0;
-                    
+                    {
+                        S=1;
+                        char *memS = (char*) malloc(17);
+                        strcpy(memS,decToBin(S));
+                        int i = 0;
+                        int len = 3 - strlen(memS);
+                        memmove(memS+len, memS, strlen(memS));
+                        for (i = 0; i < len; i++ )
+                            memS[i] = '0';
+                        
+                        strcat(code, memS);
+                        printf("S: %s \n", memS);
+                        //printf("inside S variable extract %d\n",S);
+                        
+                        instruction = strtol(code,NULL,2);
+                        MEMORY[PC/4] = instruction;
+                        if(!(argNum ==5))
+                        {
+                            printf("Final code of ALU instruction to store in memory is = %s\n", code);
+                            printf("Storing at address = %d\n",PC/4);
+                            printf("INSTRUCTION IS = %d\n", instruction);
+                        }
+                        goto label_3;
+                    }
+                    else
+                    {
                     char *memS = (char*) malloc(17);
                     strcpy(memS,decToBin(S));
                     int i = 0;
@@ -1776,19 +1826,20 @@ int storeInstructionToMemory(char *filename){
                     
                     instruction = strtol(code,NULL,2);
                     MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
-                    if(!(argNum ==5)){
+                    if(!(argNum ==5))
+                    {
                         printf("Final code of ALU instruction to store in memory is = %s\n", code);
                         printf("Storing at address = %d\n",PC/4);
                         printf("INSTRUCTION IS = %d\n", instruction);
                     }
                     argNum++;
-                    
+                    }
                 }
                 
             }
             else if(argNum == 5)
             {
-                
+            label_3:
                 if(strcmp(operation,"LEAQ")==0)
                 {
                     

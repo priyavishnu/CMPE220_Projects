@@ -425,7 +425,7 @@ void execute_Fetch(char *operation, char *reg1, int address, char *reg2){
 }
 
 //Function to store the register value to specified memeory location
-void execute_store(char *operation, char *reg, int address){
+void execute_store(char *operation, char *reg1, int address,char *reg2){
     char *STORE = "STORE";
     char *R0 = "R0";
     char *R1 = "R1";
@@ -438,53 +438,74 @@ void execute_store(char *operation, char *reg, int address){
     
     char *R8 = "R8";
     char *R9 = "R9";
-       
-    printf("\n\nReceived parameters are: \n\tOperation = %s, Register = %s, Address = %d\n", operation, reg, address);
     
-    int index = address/4;
+    
+    
+    int addr=0;
+    int index=0;
+    
+    addr=address;
+    
+    //printf("\n\nReceived parameters are: \n\tOperation = %s, Register = %s, Address = %d\n", operation, reg1, address);
+    
+    if (addr == 0)
+    {
+        addr=get_register(reg2);
+        printf("\nvalue of reg 2 is %d\n",addr);
+        index = addr/4;
+    }
+    else
+    {
+        index = addr/4;
+    }
+    
+    
+    printf("\n\nReceived parameters are: \n\tOperation = %s, Register = %s, Address = %d\n", operation, reg1, address);
+    
+   // int index = address/4;
 
     int i = 0;
     int reg_val=0;
     
     if(strcmp(operation, STORE) == 0)
     {
-        if(strcmp(reg,R0) == 0){
+        if(strcmp(reg1,R0) == 0){
             MEMORY[index] = r0;
         }
-        else if(strcmp(reg,R1) == 0){
+        else if(strcmp(reg1,R1) == 0){
             MEMORY[index] = r1;
         }
-        else if(strcmp(reg,R2) == 0){
+        else if(strcmp(reg1,R2) == 0){
             MEMORY[index] = r2;
         }
-        else if(strcmp(reg,R3) == 0){
+        else if(strcmp(reg1,R3) == 0){
             MEMORY[index] = r3;
         }
-        else if(strcmp(reg,R4) == 0){
+        else if(strcmp(reg1,R4) == 0){
             MEMORY[index] = r4;
         }
-        else if(strcmp(reg,R5) == 0){
+        else if(strcmp(reg1,R5) == 0){
             MEMORY[index] = r5;
         }
-        else if(strcmp(reg,R6) == 0){
+        else if(strcmp(reg1,R6) == 0){
             MEMORY[index] = r6;
         }
-        else if(strcmp(reg,R7) == 0){
+        else if(strcmp(reg1,R7) == 0){
             MEMORY[index] = r7;
         }
-        else if(strcmp(reg,R8) == 0){
+        else if(strcmp(reg1,R8) == 0){
             MEMORY[index] = SP;
         }
-        else if(strcmp(reg,R9) == 0){
+        else if(strcmp(reg1,R9) == 0){
             MEMORY[index] = RA;
         }
         
     }
     
-    reg_val=get_register(reg);
-    printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], reg, reg_val);
+    reg_val=get_register(reg1);
+    printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", addr, MEMORY[index], reg1, reg_val);
     
-    MAR = address;
+    MAR = addr;
     MDR = MEMORY[index];
     printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
 }
@@ -1338,7 +1359,7 @@ int executeInstruction(int PC_max){
         switch(opCodeInt){
             case 0: execute_Fetch(operation, register1, address,register2);
                     break;
-            case 1: execute_store(operation, register1, address);
+            case 1: execute_store(operation, register1, address,register2);
                     break;
             case 2: (*fun_ptr_arr[3])(register1, register2);
                     break;
@@ -2034,9 +2055,10 @@ void print_values(){
 
 void initialize_code_test() {       
     
-    MEMORY[20000] = 222;    
-    r0 = 1;
-    r1 = 14;
+    MEMORY[20000] = 22;
+    
+    r0 = 20000;
+    r1 = 20000;
     r2 = 20000;
     r3 = 4;
     r4 = 4;

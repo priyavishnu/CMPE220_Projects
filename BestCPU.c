@@ -325,7 +325,7 @@ char *get_operation(int opCodeInt){
                  break;
         case 20: operation = "JB";
                  break;
-        case 21: operation = "SETE";
+        case 21: operation = "JR";
                  break;
         case 22: operation = "SETNE";
                  break;
@@ -1076,6 +1076,16 @@ int get_line(char *label){
     
 }
 
+//function call for jr instruction.  Format: jr dest
+void call_jr(char *reg1)
+{
+    int num = get_register(reg1);
+    
+    PC = num;
+    
+    return;
+}
+
 //Function for executing the instruction JE, jumps if Zero flag = 1
 void call_je(int offset_address)
 {
@@ -1261,7 +1271,7 @@ int executeInstruction(int PC_max){
                 register2 = register_binary_to_char(register2_in_binary);
                 address = strtol(memAddress,NULL,2); 
             }
-            else if(opCodeInt == 2 || opCodeInt == 3 || opCodeInt == 4 || opCodeInt == 5 || opCodeInt == 6 || opCodeInt == 8 || opCodeInt == 9 || opCodeInt == 26){
+            else if(opCodeInt == 2 || opCodeInt == 3 || opCodeInt == 4 || opCodeInt == 5 || opCodeInt == 6 || opCodeInt == 8 || opCodeInt == 9 || opCodeInt == 26 ||opCodeInt == 21){
 
                 for(i = 5; i < 10; i++){
                     register1_in_binary[i-5] = instrucitonBinaryToExecute[i];       //Building Register1 out of the instruction
@@ -1378,6 +1388,8 @@ int executeInstruction(int PC_max){
             case 19: call_ja(offset_address);
                      break;
             case 20: call_jb(offset_address);
+                     break;
+            case 21: call_jr(register1);
                      break;
             case 25: set_register(register1, immediate);
                      break;
@@ -1555,7 +1567,7 @@ int storeInstructionToMemory(char *filename){
                     strcat(code, "10100");
                     operation = split;
                 }
-                else if(strcmp(split, "SETE")==0){
+                else if(strcmp(split, "JR")==0){
                     strcat(code, "10101");
                     operation = split;
                 }
@@ -1616,8 +1628,6 @@ int storeInstructionToMemory(char *filename){
                     argNum++;
                 
                 }
-                
-
                 else if(strcmp(operation,"LEAQ")==0)
                 {
                     D = atoi(split);
@@ -1690,7 +1700,7 @@ int storeInstructionToMemory(char *filename){
 
                     argNum++;
                     
-                    if (strcmp(operation,"SETE")==0 ||
+                    if (strcmp(operation,"JR")==0 ||
                         strcmp(operation,"SETNE")==0 ||
                         strcmp(operation,"SETS")==0 ||
                         strcmp(operation,"SETNS")==0
@@ -2035,7 +2045,7 @@ void initialize_code_test() {
     r7 = 8;
     FLG = 0;
     
-    RA=20000;
+    RA=40016;
 
 }
 

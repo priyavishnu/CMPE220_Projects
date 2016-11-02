@@ -18,12 +18,13 @@
 
 int MEMORY[MEM_MAX + 1] = {0};   // Memory
 
+
 // General Purpose registers r0-r7
 int     r0 = 0, 
         r1 = 0,
-        r2 = 0,
-        r3 = 0,
-        r4 = 0, 
+        r2 = 20000,
+        r3 = 20036,
+        r4 = 10,
         r5 = 0, 
         r6 = 0, 
         r7 = 0;
@@ -1412,6 +1413,7 @@ int executeInstruction(int PC_max){
                      break;
             case 22: call_jal(offset_address);
                      break;
+            case 25: set_register(register1, immediate);
             case 26: (*fun_ptr_arr[4])(register1, register2);
                      break;
             default: printf("UNEXPECTED OPCODE, PLEASE CHECK IF YOU ADDED THE OPERATION INTO THE INSTRUCTION SET ARCHITECTURE!");
@@ -2072,8 +2074,22 @@ void initialize_code_test() {
 }
 
 int main(int argc, char *argv[]){
+    
+    MEMORY[20000/4] = 1;
+    MEMORY[20004/4] = 10;
+    MEMORY[20008/4] = 12;
+    MEMORY[20012/4] = 41;
+    MEMORY[20016/4] = 76;
+    MEMORY[20020/4] = 81;
+    MEMORY[20024/4] = 91;
+    MEMORY[20028/4] = 100;
+    MEMORY[20032/4] = 101;
+    MEMORY[20036/4] = 112;
+    
+    SP = 10000;
+    
     printf("\n========================Initializing registers ==================================") ;
-    initialize_code_test();
+    //initialize_code_test();
     printf("\n\n========================Initial values before execution =========================") ;
     print_values();
     int PC_max = storeInstructionToMemory(argv[1]);

@@ -1,0 +1,32 @@
+main:JUMP binary_search
+JUMP Exit
+binary_search: LOADI R1,4
+SUB R1,SP
+STORE RA,SP
+CMPQ R2,R3
+JL Finish
+LOADI R6,1
+MOV R3,R5
+ADD R2,R5
+LOADI R1,2
+DIV R1,R5
+FETCH R7,R5
+CMPQ R4,R7
+JE Found
+JG Lower
+JL Upper
+Lower: SUB R6,R5
+MOV R5,R3
+JAL binary_search
+JUMP return
+Upper: ADD R6,R5
+MOV R5,R2
+JAL binary_search
+JUMP return
+Found: MOV R5,R0
+JUMP return
+Finish: LOADI R0,-1
+return: FETCH RA,SP
+ADD SP,R1
+JR RA
+Exit:

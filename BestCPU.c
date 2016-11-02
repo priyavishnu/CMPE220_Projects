@@ -322,7 +322,7 @@ char *get_operation(int opCodeInt){
 
 
 //Function to fetch the value from specified memeory location to register
-void execute_Fetch(char *operation, char *reg, int address){
+void execute_Fetch(char *operation, char *reg1, int address, char *reg2){
     char *FETCH = "FETCH";
     char *R0 = "R0";            //JUST FOR COMPARING WHICH REGISTER IS RECEIVED AS PARAMETER.
     char *R1 = "R1";
@@ -332,46 +332,61 @@ void execute_Fetch(char *operation, char *reg, int address){
     char *R5 = "R5";
     char *R6 = "R6";
     char *R7 = "R7";
+    int addr=0;
+    int index=0;
     
-    printf("\n\nReceived parameters are: \n\tOperation = %s, Register = %s, Address = %d\n", operation, reg, address);
+    addr=address;
     
-    int index = address/4;
+    printf("\n\nReceived parameters are: \n\tOperation = %s, Register = %s, Address = %d\n", operation, reg1, address);
+    
+    if (addr == 0)
+    {
+        addr=get_register(reg2);
+        printf("\nvalue of reg 2 is %d\n",addr);
+        index = addr/4;
+    }
+    else
+    {
+        index = addr/4;
+    }
+    
+    
    
     int i = 0;
     int reg_val=0;
 
     
-    if(strcmp(reg,R0) == 0){
+    if(strcmp(reg1,R0) == 0){
         r0 = MEMORY[index];
         
     }
-    else if(strcmp(reg,R1) == 0){
+    else if(strcmp(reg1,R1) == 0){
         r1 = MEMORY[index];
     }
-    else if(strcmp(reg,R2) == 0){
+    else if(strcmp(reg1,R2) == 0){
         r2 = MEMORY[index];
     }
-    else if(strcmp(reg,R3) == 0){
+    else if(strcmp(reg1,R3) == 0){
         r3 = MEMORY[index];
        
     }
-    else if(strcmp(reg,R4) == 0){
+    else if(strcmp(reg1,R4) == 0){
         r4 = MEMORY[index];
     }
-    else if(strcmp(reg,R5) == 0){
+    else if(strcmp(reg1,R5) == 0){
         r5 = MEMORY[index];
     }
-    else if(strcmp(reg,R6) == 0){
+    else if(strcmp(reg1,R6) == 0){
         r6 = MEMORY[index];
     }
-    else if(strcmp(reg,R7) == 0){
+    else if(strcmp(reg1,R7) == 0){
         r7 = MEMORY[index];
     }
     
-    reg_val=get_register(reg);
-    printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", address, MEMORY[index], reg, reg_val);
+    reg_val=get_register(reg1);
+    printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", addr, MEMORY[index], reg1, reg_val);
     
-    MAR = address;
+    MAR = addr;
     MDR = MEMORY[index];
     printf("\tThe MAR value %d\n\tThe MDR value %d\n\n", MAR, MDR);
     
@@ -1194,7 +1209,12 @@ int executeInstruction(int PC_max){
                 for(i = 16; i < 32; i++){     
                     memAddress[i-16] = instrucitonBinaryToExecute[i];               //Building Address out of the instruction
                 }
-
+                if(opCodeInt == 0)
+                {
+                for(i = 10; i < 15; i++){                                           //Building Register2 out of the instruction
+                    register2_in_binary[i-10] = instrucitonBinaryToExecute[i];
+                }
+                }
                 //getting the paramenters ready to send to the FETCH and STORE functions
                 register1 = register_binary_to_char(register1_in_binary);   
                 register2 = register_binary_to_char(register2_in_binary);
@@ -1267,7 +1287,7 @@ int executeInstruction(int PC_max){
         int divisionResult;
 
         switch(opCodeInt){
-            case 0: execute_Fetch(operation, register1, address);
+            case 0: execute_Fetch(operation, register1, address,register2);
                     break;
             case 1: execute_store(operation, register1, address);
                     break;
@@ -1640,6 +1660,7 @@ int storeInstructionToMemory(char *filename){
             else if(argNum == 2)
             {
             label_1:
+                
                 if(strcmp(operation, "LOADI")==0)
                 {
                     int value = atoi(split);
@@ -1668,6 +1689,34 @@ int storeInstructionToMemory(char *filename){
                     //memory
                     int addr = atoi(split);
                     address = addr;
+                    
+                    if (addr == 0)
+                    {
+                        //register 2
+                        register2 = split;
+                        int reg2 = split[1] - '0';
+                        int bin2 = decimalToBinary(reg2);
+                        sprintf(binary_reg2, "%d", bin2);
+                        
+                        int i = 0;
+                        int len = 5 - strlen(binary_reg2);
+                        memmove(binary_reg2+len, binary_reg2, strlen(binary_reg2));
+                        for (i = 0; i < len; i++ ){
+                            binary_reg2[i] = '0';
+                        }
+                        strcat(code, binary_reg2);
+                        printf("Register2: %s \n", binary_reg2);
+                        strcat(code, "00000000000000000");         //UNUSED ADDRESS PART IN THE INSTRUCTION
+                        instruction = strtol(code,NULL,2);
+                        MEMORY[PC/4] = instruction;                //INSTRUCTION STORED IN THE MEMORY
+                        printf("Final code of ALU instruction to store in memory is = %s\n", code);
+                        printf("Storing at address = %d\n",PC/4);
+                        printf("INSTRUCTION IS = %d\n", instruction);
+                        
+                        argNum++;
+                        goto label_store;
+                    }
+                    
                     char *memAddr = (char*) malloc(17);
                     strcpy(memAddr,decToBin(addr));
                     int i = 0;
@@ -1689,7 +1738,8 @@ int storeInstructionToMemory(char *filename){
                     printf("Memory[PC/4] = %d\n", MEMORY[PC/4]);
                     
                     argNum++;
-                    
+                label_store:
+                    printf("Its a destination register for store or fetch\n");
                 }
                 else if(strcmp(operation,"LEAQ")==0)
                 {
@@ -1912,8 +1962,8 @@ void initialize_code_test() {
     
     MEMORY[20000] = 222;    
     r0 = 1;
-    r1 = 4;
-    r2 = 0;
+    r1 = 14;
+    r2 = 20000;
     r3 = 4;
     r4 = 4;
     r5 = 6;

@@ -162,6 +162,9 @@ int get_register (char *reg)
     char *R6 = "R6";
     char *R7 = "R7";
     
+    char *R8 = "R8";
+    char *R9 = "R9";
+    
     //find first register value
     if(strcmp(reg,R0) == 0){
         return r0;
@@ -187,6 +190,12 @@ int get_register (char *reg)
     else if(strcmp(reg,R7) == 0){
         return r7;
     }
+    else if(strcmp(reg,R8) == 0){
+        return SP;
+    }
+    else if(strcmp(reg,R9) == 0){
+        return RA;
+    }
     
     return 0;
 }
@@ -202,6 +211,9 @@ void set_register (char *reg,int val)
     char *R5 = "R5";
     char *R6 = "R6";
     char *R7 = "R7";
+    
+    char *R8 = "R8";
+    char *R9 = "R9";
     
     //find first register value
     if(strcmp(reg,R0) == 0){
@@ -228,6 +240,12 @@ void set_register (char *reg,int val)
     else if(strcmp(reg,R7) == 0){
         r7=val;
     }
+    else if(strcmp(reg,R8) == 0){
+        SP=val;
+    }
+    else if(strcmp(reg,R9) == 0){
+        RA=val;
+    }
     
     return;
 }
@@ -253,6 +271,10 @@ char *register_binary_to_char(char *reg_in_binary){
                 break;
         case 7: register_in_char = "R7";
                 break;
+        case 8: register_in_char = "R8";
+            break;
+        case 9: register_in_char = "R9";
+            break;
         default: printf("UNKNOWN REGISTER VALUE\n");
     }
     return register_in_char;
@@ -332,6 +354,10 @@ void execute_Fetch(char *operation, char *reg1, int address, char *reg2){
     char *R5 = "R5";
     char *R6 = "R6";
     char *R7 = "R7";
+    
+    char *R8 = "R8";
+    char *R9 = "R9";
+    
     int addr=0;
     int index=0;
     
@@ -382,6 +408,12 @@ void execute_Fetch(char *operation, char *reg1, int address, char *reg2){
     else if(strcmp(reg1,R7) == 0){
         r7 = MEMORY[index];
     }
+    else if(strcmp(reg1,R8) == 0){
+        SP= MEMORY[index];
+    }
+    else if(strcmp(reg1,R9) == 0){
+        RA= MEMORY[index];
+    }
     
     reg_val=get_register(reg1);
     printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", addr, MEMORY[index], reg1, reg_val);
@@ -403,6 +435,9 @@ void execute_store(char *operation, char *reg, int address){
     char *R5 = "R5";
     char *R6 = "R6";
     char *R7 = "R7";
+    
+    char *R8 = "R8";
+    char *R9 = "R9";
        
     printf("\n\nReceived parameters are: \n\tOperation = %s, Register = %s, Address = %d\n", operation, reg, address);
     
@@ -436,6 +471,12 @@ void execute_store(char *operation, char *reg, int address){
         }
         else if(strcmp(reg,R7) == 0){
             MEMORY[index] = r7;
+        }
+        else if(strcmp(reg,R8) == 0){
+            MEMORY[index] = SP;
+        }
+        else if(strcmp(reg,R9) == 0){
+            MEMORY[index] = RA;
         }
         
     }
@@ -1624,6 +1665,13 @@ int storeInstructionToMemory(char *filename){
                 }
                 else
                 {
+                    if(strcmp(split, "SP")==0){
+                        split="R8";
+                    }
+                    else if(strcmp(split, "RA")==0){
+                        split="R9";
+                    }
+                    
                     //register1
                     register1 = split;
                     int reg1 = split[1] - '0';
@@ -1692,6 +1740,15 @@ int storeInstructionToMemory(char *filename){
                     
                     if (addr == 0)
                     {
+                        if(strcmp(split, "SP")==0){
+                            split="R8";
+                        }
+                        else if(strcmp(split, "RA")==0){
+                            split="R9";
+                        }
+                        
+                        printf("split RA = %s\n", split);
+                        
                         //register 2
                         register2 = split;
                         int reg2 = split[1] - '0';
@@ -1781,6 +1838,13 @@ int storeInstructionToMemory(char *filename){
                         strcmp(operation,"MOV")==0 ||
                         strcmp(operation,"TEST")==0 )
                 {
+                    if(strcmp(split, "SP")==0){
+                        split="R8";
+                    }
+                    else if(strcmp(split, "RA")==0){
+                        split="R9";
+                    }
+                    
                     //register 2
                     register2 = split;
                     int reg2 = split[1] - '0';
@@ -1969,7 +2033,9 @@ void initialize_code_test() {
     r5 = 6;
     r6 = 7; 
     r7 = 8;
-    FLG = 0;    
+    FLG = 0;
+    
+    RA=20000;
 
 }
 

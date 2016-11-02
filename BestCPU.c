@@ -327,7 +327,7 @@ char *get_operation(int opCodeInt){
                  break;
         case 21: operation = "JR";
                  break;
-        case 22: operation = "SETNE";
+        case 22: operation = "JAL";
                  break;
         case 23: operation = "SETS";
                  break;
@@ -870,21 +870,12 @@ int division(int dividend, int divisor, int originalDivisor, int remainder)
     
     while (divisor <= dividend)
     {
-        /*printf("------------Entered While-------------------\n");
-         printf("divisor = %d\n", divisor);
-         printf("dividend = %d\n", dividend);
-         printf("quotient = %d\n", quotient);*/
-        
         divisor = divisor << 1;
         quotient = quotient << 1;
     }
     
     if (dividend < divisor)
     {
-        /*printf("----------entered IF---------------------\n");
-         printf("divisor = %d\n", divisor);
-         printf("dividend = %d\n", dividend);
-         printf("quotient = %d\n", quotient);*/
         divisor >>= 1;
         quotient >>= 1;
     }
@@ -1203,6 +1194,13 @@ void call_jb(int offset_address)
     return;
 }
 
+//Function for executing the instruction JAL, jump and link to label, store PC in RA
+void call_jal(int offset_address)
+{
+    RA = PC;
+    PC = (40000 + (4 * offset_address));
+    return;
+}
 
 
 
@@ -1309,7 +1307,7 @@ int executeInstruction(int PC_max){
                 D = strtol(D_in_char,NULL,2);
                 dest = register_binary_to_char(dest_in_char);
             }
-            else if (opCodeInt >= 10 && opCodeInt <= 20){
+            else if ((opCodeInt >= 10 && opCodeInt <= 20) || opCodeInt == 22){
                 for(i = 5; i < 32; i++){
                     memAddress[i-5] = instrucitonBinaryToExecute[i];        //Fetching the line number to calculate the new Jump value
                 }
@@ -1391,7 +1389,7 @@ int executeInstruction(int PC_max){
                      break;
             case 21: call_jr(register1);
                      break;
-            case 25: set_register(register1, immediate);
+            case 22: call_jal(offset_address);
                      break;
             case 26: (*fun_ptr_arr[4])(register1, register2);
                      break;
@@ -1571,7 +1569,7 @@ int storeInstructionToMemory(char *filename){
                     strcat(code, "10101");
                     operation = split;
                 }
-                else if(strcmp(split, "SETNE")==0){
+                else if(strcmp(split, "JAL")==0){
                     strcat(code, "10110");
                     operation = split;
                 }
@@ -1591,6 +1589,7 @@ int storeInstructionToMemory(char *filename){
                     strcat(code, "11010");
                     operation = split;
                 }
+                
                 else printf("UNEXPECTED OPCODE, PLEASE CHECK IF YOU ADDED THE OPERATION INTO THE INSTRUCTION SET ARCHITECTURE!");
                 argNum++;
                 printf("\n \n ************ Now Storing Instruction: %s ************* \n", operation);
@@ -1608,7 +1607,8 @@ int storeInstructionToMemory(char *filename){
                    strcmp(operation,"JL")==0 ||
                    strcmp(operation,"JLE")==0 ||
                    strcmp(operation,"JA")==0 ||
-                   strcmp(operation,"JB")==0
+                   strcmp(operation,"JB")==0 ||
+                   strcmp(operation,"JAL")==0
                    )
                 {
                     int line_no;

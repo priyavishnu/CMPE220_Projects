@@ -613,6 +613,7 @@ void set_overflow_sub(int num1, int num2, int result){
     if((msbNum1 != msbNum2) && (msbResult == msbNum2)){
             FLG = FLG | 0x08;
         }
+    
     else if((FLG>>3) & 0x1){
         FLG = FLG ^ 0x08;
     }
@@ -772,7 +773,7 @@ void sub(char* reg1, char* reg2){
         set_zero(num1);
         set_sign(num1);
         set_carry(n1,n2, num1);
-        set_overflow_sub(n1, n2, num1);
+        set_overflow_sub(n1, num2, num1);
     
     //Storing result in register
        set_register(reg2,num1);
@@ -792,7 +793,7 @@ void sub(char* reg1, char* reg2){
     set_sign(num1);
     if(num1 < num2 )
         set_carry(n1,n2, num1);
-    set_overflow_sub(n1, n2, num1);
+    set_overflow_sub(n1, num2, num1);
     
     //Storing result in register
     set_register(reg2,num1);
@@ -1013,7 +1014,7 @@ void call_cmpq(char *reg1, char *reg2)
         set_zero(num1);
         set_sign(num1);
         set_carry(n1,n2, num1);
-        set_overflow_sub(n1, n2, num1);
+        set_overflow_sub(n1, num2, num1);
 
         return;
     }
@@ -1033,7 +1034,7 @@ void call_cmpq(char *reg1, char *reg2)
     {
     set_carry(n1,n2, num1);
     }
-    set_overflow_sub(n1, n2, num1);
+    set_overflow_sub(n1, num2, num1);
     
     return;
 }
@@ -2114,7 +2115,7 @@ int main(int argc, char *argv[]){
     
     r2 = 20000;
     r3 = 20036;
-    r4 = 101;
+    r4 = 1;
     
     RA = 40016;
     

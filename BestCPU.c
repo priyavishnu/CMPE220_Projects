@@ -22,9 +22,9 @@ int MEMORY[MEM_MAX + 1] = {0};   // Memory
 // General Purpose registers r0-r7
 int     r0 = 0, 
         r1 = 0,
-        r2 = 20000,
-        r3 = 20036,
-        r4 = 10,
+        r2 = 0,
+        r3 = 0,
+        r4 = 0,
         r5 = 0, 
         r6 = 0, 
         r7 = 0;
@@ -2112,7 +2112,11 @@ int main(int argc, char *argv[]){
     
     SP = 10000;
     
-    RA=40016;
+    r2 = 20000;
+    r3 = 20036;
+    r4 = 76;
+    
+    RA = 40016;
     
     printf("\n========================Initializing registers ==================================") ;
     //initialize_code_test();

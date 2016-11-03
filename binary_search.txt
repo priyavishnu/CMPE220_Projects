@@ -3,7 +3,7 @@ LOADI R1,4
 DIV R1,R3
 MOV R2,R0
 LOADI R2,0
-JUMP binary_search
+JAL binary_search
 JUMP Exit
 binary_search: LOADI R1,4
 SUB R1,SP
@@ -19,7 +19,7 @@ LOADI R1,4
 MUL R5,R1
 ADD R0,R1
 FETCH R7,R1
-CMPQ R4,R7
+CMPQ R7,R4
 JE Found
 JG Lower
 JL Upper

@@ -1280,7 +1280,7 @@ int executeInstruction(int PC_max){
                 for(i = 16; i < 32; i++){     
                     memAddress[i-16] = instrucitonBinaryToExecute[i];               //Building Address out of the instruction
                 }
-                if(opCodeInt == 0)
+                if(opCodeInt == 0 || opCodeInt == 1)
                 {
                 for(i = 10; i < 15; i++){                                           //Building Register2 out of the instruction
                     register2_in_binary[i-10] = instrucitonBinaryToExecute[i];

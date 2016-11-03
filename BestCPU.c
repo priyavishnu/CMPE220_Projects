@@ -416,7 +416,17 @@ void execute_Fetch(char *operation, char *reg1, int address, char *reg2){
         RA= MEMORY[index];
     }
     
+
+    
     reg_val=get_register(reg1);
+    
+    printf("\t**************FETCH *******************\n");
+    printf("\tData at location memory %d is %d \n", index, MEMORY[index]);
+    printf("\tData at location register %s is %d \n", reg1, reg_val);
+    printf("\t***********************************\n");
+    
+    
+    
     printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", addr, MEMORY[index], reg1, reg_val);
     
     MAR = addr;
@@ -452,13 +462,15 @@ void execute_store(char *operation, char *reg1, int address,char *reg2){
     if (addr == 0)
     {
         addr=get_register(reg2);
-        printf("\nvalue of reg 2 is %d\n",addr);
+        
         index = addr/4;
     }
     else
     {
         index = addr/4;
     }
+    
+    printf("\nvalue of reg outside the store is %d\n",addr);
     
     
     printf("\n\nReceived parameters are: \n\tOperation = %s, Register = %s, Address = %d\n", operation, reg1, address);
@@ -504,6 +516,13 @@ void execute_store(char *operation, char *reg1, int address,char *reg2){
     }
     
     reg_val=get_register(reg1);
+    
+    printf("\t**************STORE *******************\n");
+    printf("\tData at location memory %d is %d \n", index, MEMORY[index]);
+    printf("\tData at location register %s is %d \n", reg1, reg_val);
+    printf("\t***********************************\n");
+    
+    
     printf("\tData at location %d is %d \n\tValue in Register %s now is %d\n", addr, MEMORY[index], reg1, reg_val);
     
     MAR = addr;
@@ -2069,7 +2088,7 @@ void initialize_code_test() {
     r7 = 8;
     FLG = 0;
     
-    RA=40016;
+    
 
 }
 
@@ -2086,7 +2105,9 @@ int main(int argc, char *argv[]){
     MEMORY[20032/4] = 101;
     MEMORY[20036/4] = 112;
     
-    SP = 10000;
+    SP = 80000;
+    
+    RA=14;
     
     printf("\n========================Initializing registers ==================================") ;
     //initialize_code_test();

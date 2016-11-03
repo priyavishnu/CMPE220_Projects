@@ -19,10 +19,10 @@ LOADI R1,4
 MUL R5,R1
 ADD R0,R1
 FETCH R7,R1
-CMPQ R7,R4
+CMPQ R4,R7
 JE Found
-JG Lower
-JL Upper
+JL Lower
+JUMP Upper
 Lower: SUB R6,R5
 MOV R5,R3
 JAL binary_search
@@ -33,8 +33,11 @@ JAL binary_search
 JUMP return
 Found: MOV R5,R0
 JUMP return
-Finish: LOADI R0,-1
+Finish: LOADI R0,0
+LOADI R1,1
+SUB R1,R0
 return: FETCH RA,SP
-ADD SP,R1
+LOADI R1,4
+ADD R1,SP
 JR RA
-Exit:
+Exit:LOADI R2,0

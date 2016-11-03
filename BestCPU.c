@@ -1354,7 +1354,8 @@ int executeInstruction(int PC_max){
                 }
                 offset_address = strtol(memAddress,NULL,2); 
             }
-            else if (opCodeInt == 25){
+            else if (opCodeInt == 25)
+            {
                 for(i = 5; i < 10; i++){
                     register1_in_binary[i-5] = instrucitonBinaryToExecute[i];       //Building Register1 out of the instruction
                 }
@@ -1433,6 +1434,10 @@ int executeInstruction(int PC_max){
             case 22: call_jal(offset_address);
                      break;
             case 25: set_register(register1, immediate);
+                printf("\t**************LOADI *******************\n");
+                printf("\tLoadI registers argument values register %s is %d \n", register1, immediate);
+                printf("\t***********************************\n");
+                break;
             case 26: (*fun_ptr_arr[4])(register1, register2);
                      break;
             default: printf("UNEXPECTED OPCODE, PLEASE CHECK IF YOU ADDED THE OPERATION INTO THE INSTRUCTION SET ARCHITECTURE!");
@@ -2105,9 +2110,9 @@ int main(int argc, char *argv[]){
     MEMORY[20032/4] = 101;
     MEMORY[20036/4] = 112;
     
-    SP = 80000;
+    SP = 10000;
     
-    RA=14;
+    RA=40016;
     
     printf("\n========================Initializing registers ==================================") ;
     //initialize_code_test();

@@ -1388,8 +1388,8 @@ int executeInstruction(int PC_max){
                     break;
             case 4: (*fun_ptr_arr[2])(register1, register2);    
                     break;
-            case 5: dividend = get_register(register1);
-                    divisor = get_register(register2);
+            case 5: dividend = get_register(register2);
+                    divisor = get_register(register1);
                     if(divisor == 0){
                     printf("Invalid DIV operation.Please check Divisor it can can not be 0\n");
                     return -1;
